@@ -61,9 +61,25 @@
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
                     <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900">
                 </div>
-                <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Importe Total (SIN IVA) (€)</label>
-                    <input type="number" id="val-total" placeholder="Ej: 1250" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-slate-50">
+                
+                <!-- SECCIÓN DE PRECIO E IVA -->
+                <div class="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                        <label class="block text-sm font-semibold text-slate-700">Importe Base / Total (€)</label>
+                        
+                        <!-- Selector IVA / SIN IVA -->
+                        <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
+                            <span class="text-xs font-bold text-slate-600">Cálculo:</span>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                                <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600"> Sin IVA
+                            </label>
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                                <input type="radio" name="tipo-iva" value="con" class="text-blue-600"> Con IVA (+21%)
+                            </label>
+                        </div>
+                    </div>
+                    <input type="number" id="val-total" placeholder="Ej: 1250" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white">
+                    <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1.5">Introduce la cantidad y se calculará automáticamente la cuenta a ingresar.</p>
                 </div>
             </div>
 
@@ -110,8 +126,8 @@
             <!-- BLOQUE TOTAL -->
             <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
                 <div class="text-right leading-tight">
-                    <div class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
-                    <div class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
+                    <div id="out-label-iva" class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
+                    <div id="out-sublabel-iva" class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
                 </div>
                 <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
                     <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
@@ -122,7 +138,7 @@
 
     </div>
 
-    <!-- Script de sincronización, cálculo inteligente y descargas -->
+    <!-- Script de sincronización, cálculo de IVA y descargas -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -130,6 +146,8 @@
         const vFecha = document.getElementById('val-fecha');
         const vCuenta = document.getElementById('val-cuenta');
         const vTotal = document.getElementById('val-total');
+        const radiosIva = document.getElementsByName('tipo-iva');
+        const infoIvaDetalle = document.getElementById('info-iva-detalle');
         const vTrabajos = document.getElementById('val-trabajos');
 
         const oNombre = document.getElementById('out-nombre');
@@ -138,6 +156,8 @@
         const oFecha = document.getElementById('out-fecha');
         const oCuenta = document.getElementById('out-cuenta');
         const oTotal = document.getElementById('out-total');
+        const oLabelIva = document.getElementById('out-label-iva');
+        const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
 
         if (!vTrabajos.value) {
@@ -164,33 +184,69 @@
             return fechaStr;
         }
 
-        // Lógica de cálculo automático cruzado
         let calculando = false;
 
+        // Obtener modo de IVA seleccionado
+        function obtenerModoIva() {
+            for (const radio of radiosIva) {
+                if (radio.checked) return radio.value;
+            }
+            return 'sin';
+        }
+
+        // Recalcular al cambiar el total base
         vTotal.addEventListener('input', function() {
             if (calculando) return;
             calculando = true;
-            const totalVal = parseFloat(vTotal.value);
-            if (!isNaN(totalVal)) {
-                vCuenta.value = (totalVal / 2).toFixed(2).replace(/\.00$/, '');
+            
+            const baseVal = parseFloat(vTotal.value);
+            const modo = obtenerModoIva();
+            
+            if (!isNaN(baseVal)) {
+                let precioFinal = baseVal;
+                if (modo === 'con') {
+                    precioFinal = baseVal * 1.21; // Aplica 21% de IVA
+                }
+                // La entrega a cuenta es el 50% del precio final con o sin IVA
+                vCuenta.value = (precioFinal / 2).toFixed(2).replace(/\.00$/, '');
             } else {
                 vCuenta.value = '';
             }
+            
             calculando = false;
             actualizarVista();
         });
 
+        // Recalcular al cambiar la cuenta a ingresar (50%)
         vCuenta.addEventListener('input', function() {
             if (calculando) return;
             calculando = true;
+            
             const cuentaVal = parseFloat(vCuenta.value);
             if (!isNaN(cuentaVal)) {
+                // Si pone la cuenta, el total es el doble
                 vTotal.value = (cuentaVal * 2).toFixed(2).replace(/\.00$/, '');
             } else {
                 vTotal.value = '';
             }
+            
             calculando = false;
             actualizarVista();
+        });
+
+        // Si cambia el radio button de IVA, actualizamos textos y recalculamos textos visuales
+        radiosIva.forEach(radio => {
+            radio.addEventListener('change', function() {
+                const modo = obtenerModoIva();
+                if (modo === 'con') {
+                    infoIvaDetalle.textContent = "Se aplicará automáticamente un 21% de IVA sobre la cantidad introducida.";
+                    oSublabelIva.textContent = "(CON IVA 21%)";
+                } else {
+                    infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
+                    oSublabelIva.textContent = "(SIN IVA)";
+                }
+                actualizarVista();
+            });
         });
 
         function actualizarVista() {
@@ -199,10 +255,24 @@
             oTelefono.textContent = vTelefono.value;
             oFecha.textContent = formatearFechaEspanol(vFecha.value);
             
-            // Añadir el símbolo de € automáticamente en la hoja si hay número
+            const baseVal = parseFloat(vTotal.value);
+            const modo = obtenerModoIva();
+
+            if (!isNaN(baseVal)) {
+                let precioFinal = baseVal;
+                if (modo === 'con') {
+                    precioFinal = baseVal * 1.21;
+                    oSublabelIva.textContent = "(CON IVA 21%)";
+                } else {
+                    oSublabelIva.textContent = "(SIN IVA)";
+                }
+
+                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+            } else {
+                oTotal.textContent = "";
+            }
+
             oCuenta.textContent = vCuenta.value ? vCuenta.value + " €" : "";
-            oTotal.textContent = vTotal.value ? vTotal.value + " €" : "";
-            
             oTrabajos.textContent = vTrabajos.value;
         }
 
