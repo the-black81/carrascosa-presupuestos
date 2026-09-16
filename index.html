@@ -13,7 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor A4 base grande (perfecto para PC y renderizado interno) */
+        /* Contenedor A4 base grande y unificado */
         .presupuesto-hoja {
             width: 800px;
             height: 1131px;
@@ -23,14 +23,14 @@
             position: relative;
             background-color: #ffffff;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            flex-shrink: 0;
         }
 
-        /* Contenedor adaptado para el modal móvil sin deformaciones */
+        /* Estilo para el modal móvil manteniendo proporción exacta */
         #modal-content-wrapper .presupuesto-hoja {
             max-width: 100% !important;
             height: auto !important;
             aspect-ratio: 800 / 1131;
-            transform: none !important;
         }
 
         @media print {
@@ -55,7 +55,7 @@
                 </div>
             </div>
             <div class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
-                Sistema Blindado 🟢
+                Sincronización Total ⚡
             </div>
         </div>
 
@@ -132,7 +132,42 @@
                 <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vista Previa en Directo (PC)</span>
             </div>
             <div class="overflow-x-auto w-full flex justify-center bg-slate-950 p-6 rounded-2xl border border-slate-800">
-                <div id="preview-pc-container"></div>
+                <!-- CONTENEDOR ÚNICO DE CAPTURA VISIBLE EN PC -->
+                <div id="captura-area" class="presupuesto-hoja text-slate-800">
+                    <!-- DATOS CLIENTE -->
+                    <div class="absolute flex flex-col justify-between" style="top: 56px; left: 545px; width: 235px; height: 108px;">
+                        <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                        <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                        <div id="out-telefono" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                        <div id="out-fecha" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap;"></div>
+                    </div>
+
+                    <!-- TRABAJOS A REALIZAR -->
+                    <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 220px;">
+                        <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
+                    </div>
+
+                    <!-- ZONA INFERIOR -->
+                    <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
+                        <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
+                        <div id="out-cuenta" class="font-bold text-[14px]" style="color: #1e3a8a; width: 150px; line-height: normal;"></div>
+                    </div>
+
+                    <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
+                        Mano de obra y desplazamiento incluido
+                    </div>
+
+                    <!-- BLOQUE TOTAL -->
+                    <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
+                        <div class="text-right leading-tight">
+                            <div id="out-label-iva" class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
+                            <div id="out-sublabel-iva" class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
+                        </div>
+                        <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
+                            <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -145,9 +180,9 @@
             <button onclick="cerrarModalPreview()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow hover:bg-rose-500 transition">✕ Cerrar Vista</button>
         </div>
 
-        <!-- Contenedor responsivo limpio -->
+        <!-- Contenedor donde se clonará exactamente el documento principal -->
         <div id="modal-content-wrapper" class="bg-slate-900 p-3 rounded-2xl border border-slate-700 shadow-2xl mb-6 flex justify-center w-full max-w-xl">
-            <!-- Se inyecta la hoja limpia aquí -->
+            <!-- Se inyecta aquí -->
         </div>
 
         <div class="flex gap-3 w-full max-w-xl pb-6 sticky bottom-0 bg-black/80 pt-2 backdrop-blur">
@@ -156,46 +191,7 @@
         </div>
     </div>
 
-    <!-- ELEMENTO REAL DE CAPTURA -->
-    <div style="position: absolute; left: -9999px; top: -9999px;">
-        <div id="captura-area" class="presupuesto-hoja text-slate-800">
-            <!-- DATOS CLIENTE -->
-            <div class="absolute flex flex-col justify-between" style="top: 56px; left: 545px; width: 235px; height: 108px;">
-                <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-telefono" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-fecha" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap;"></div>
-            </div>
-
-            <!-- TRABAJOS A REALIZAR -->
-            <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 220px;">
-                <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
-            </div>
-
-            <!-- ZONA INFERIOR -->
-            <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
-                <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
-                <div id="out-cuenta" class="font-bold text-[14px]" style="color: #1e3a8a; width: 150px; line-height: normal;"></div>
-            </div>
-
-            <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
-                Mano de obra y desplazamiento incluido
-            </div>
-
-            <!-- BLOQUE TOTAL -->
-            <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
-                <div class="text-right leading-tight">
-                    <div id="out-label-iva" class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
-                    <div id="out-sublabel-iva" class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
-                </div>
-                <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
-                    <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Script JavaScript -->
+    <!-- Script JavaScript unificado -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -217,14 +213,8 @@
         const oTrabajos = document.getElementById('out-trabajos');
 
         const capturaArea = document.getElementById('captura-area');
-        const previewPcContainer = document.getElementById('preview-pc-container');
         const modalPreview = document.getElementById('modal-preview');
         const modalContentWrapper = document.getElementById('modal-content-wrapper');
-
-        // Clonar para PC
-        const clonPc = capturaArea.cloneNode(true);
-        clonPc.id = 'preview-pc';
-        previewPcContainer.appendChild(clonPc);
 
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
@@ -300,16 +290,12 @@
 
             infoIvaDetalle.textContent = txtDetalle;
             
-            const elementosTotales = [oTotal, document.getElementById('preview-pc').querySelector('#out-total')];
-            const elementosCuentas = [oCuenta, document.getElementById('preview-pc').querySelector('#out-cuenta')];
-            const elementosSubs = [oSublabelIva, document.getElementById('preview-pc').querySelector('#out-sublabel-iva')];
-
             const totalStr = !isNaN(baseVal) ? formatearMoneda(precioFinal) + " €" : "";
             const cuentaStr = !isNaN(baseVal) ? formatearMoneda(cuentaVal) + " €" : "";
 
-            elementosTotales.forEach(el => el.textContent = totalStr);
-            elementosCuentas.forEach(el => el.textContent = cuentaStr);
-            elementosSubs.forEach(el => el.textContent = txtSub);
+            oTotal.textContent = totalStr;
+            oCuenta.textContent = cuentaStr;
+            oSublabelIva.textContent = txtSub;
         }
 
         vCuenta.addEventListener('input', function() {
@@ -330,29 +316,11 @@
         radiosIva.forEach(radio => radio.addEventListener('change', calcularDesdeTotal));
 
         function actualizarVista() {
-            const nombreVal = vNombre.value;
-            const dirVal = vDireccion.value;
-            const telVal = vTelefono.value;
-            const fechaVal = formatearFecha(vFecha.value);
-            const trabajosVal = vTrabajos.value;
-
-            const clon = document.getElementById('preview-pc');
-
-            capturaArea.querySelector('#out-nombre').textContent = nombreVal;
-            clon.querySelector('#out-nombre').textContent = nombreVal;
-
-            capturaArea.querySelector('#out-direccion').textContent = dirVal;
-            clon.querySelector('#out-direccion').textContent = dirVal;
-
-            capturaArea.querySelector('#out-telefono').textContent = telVal;
-            clon.querySelector('#out-telefono').textContent = telVal;
-
-            capturaArea.querySelector('#out-fecha').textContent = fechaVal;
-            clon.querySelector('#out-fecha').textContent = fechaVal;
-
-            capturaArea.querySelector('#out-trabajos').textContent = trabajosVal;
-            clon.querySelector('#out-trabajos').textContent = trabajosVal;
-
+            oNombre.textContent = vNombre.value;
+            oDireccion.textContent = vDireccion.value;
+            oTelefono.textContent = vTelefono.value;
+            oFecha.textContent = formatearFecha(vFecha.value);
+            oTrabajos.textContent = vTrabajos.value;
             calcularDesdeTotal();
         }
 
@@ -363,7 +331,7 @@
 
         actualizarVista();
 
-        // Control del Modal Móvil (Sin escalas deformantes, con aspect-ratio puro)
+        // Al abrir el modal en móvil, clonamos el documento real ya sincronizado
         function abrirModalPreview() {
             modalContentWrapper.innerHTML = '';
             const clonModal = capturaArea.cloneNode(true);
