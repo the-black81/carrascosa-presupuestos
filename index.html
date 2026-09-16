@@ -55,7 +55,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha (Selecciona en el calendario)</label>
-                    <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer" onchange="actualizarVistaTextos()">
+                    <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
@@ -72,14 +72,14 @@
                         <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
                             <span class="text-xs font-bold text-slate-600">Cálculo:</span>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                                <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600" onchange="recalcular()"> Sin IVA
+                                <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600"> Sin IVA
                             </label>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                                <input type="radio" name="tipo-iva" value="con" class="text-blue-600" onchange="recalcular()"> Con IVA (+21%)
+                                <input type="radio" name="tipo-iva" value="con" class="text-blue-600"> Con IVA (+21%)
                             </label>
                         </div>
                     </div>
-                    <input type="number" id="val-total" placeholder="Ej: 5000" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white" oninput="recalcular()">
+                    <input type="number" id="val-total" placeholder="Ej: 5000" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white">
                     <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1.5">Introduce la cantidad y se calculará automáticamente el total y la cuenta.</p>
                 </div>
             </div>
@@ -139,7 +139,7 @@
 
     </div>
 
-    <!-- Script de cálculo y formato de fecha -->
+    <!-- Script de control y eventos corregidos -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -171,7 +171,7 @@
                 const end = this.selectionEnd;
                 this.value = this.value.substring(0, start) + "\n• " + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 3;
-                actualizarVistaTextos();
+                actualizarTodo();
             }
         });
 
@@ -182,7 +182,6 @@
             return 'sin';
         }
 
-        // Convierte la fecha de AAAA-MM-DD a formato DD / MM / AAAA para que quede elegante en la hoja
         function formatearFecha(fechaStr) {
             if (!fechaStr) return "";
             const partes = fechaStr.split('-');
@@ -192,19 +191,26 @@
             return fechaStr;
         }
 
-        function recalcular() {
+        // Función central para calcular precios y actualizar la vista
+        function actualizarTodo() {
+            // 1. Textos básicos
+            oNombre.textContent = vNombre.value;
+            oDireccion.textContent = vDireccion.value;
+            oTelefono.textContent = vTelefono.value;
+            oFecha.textContent = formatearFecha(vFecha.value);
+            oTrabajos.textContent = vTrabajos.value;
+
+            // 2. Cálculos de precios e IVA
             const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
 
-            let precioFinal = 0;
-
             if (!isNaN(baseVal)) {
+                let precioFinal = baseVal;
                 if (modo === 'con') {
                     precioFinal = baseVal * 1.21;
                     infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
                     oSublabelIva.textContent = "(CON IVA 21%)";
                 } else {
-                    precioFinal = baseVal;
                     infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
                     oSublabelIva.textContent = "(SIN IVA)";
                 }
@@ -222,20 +228,17 @@
             }
         }
 
-        function actualizarVistaTextos() {
-            oNombre.textContent = vNombre.value;
-            oDireccion.textContent = vDireccion.value;
-            oTelefono.textContent = vTelefono.value;
-            oFecha.textContent = formatearFecha(vFecha.value);
-            oTrabajos.textContent = vTrabajos.value;
-        }
-
-        [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
-            el.addEventListener('input', actualizarVistaTextos);
-            el.addEventListener('change', actualizarVistaTextos);
+        // Escuchar eventos de escritura y cambios en todos los campos
+        [vNombre, vDireccion, vTelefono, vFecha, vTotal, vTrabajos].forEach(el => {
+            el.addEventListener('input', actualizarTodo);
+            el.addEventListener('change', actualizarTodo);
         });
 
-        actualizarVistaTextos();
+        radiosIva.forEach(radio => {
+            radio.addEventListener('change', actualizarTodo);
+        });
+
+        actualizarTodo();
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
