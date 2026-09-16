@@ -13,166 +13,183 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor A4 optimizado a 595px (Ancho exacto proporcional web/móvil) */
+        /* Contenedor A4 base grande (perfecto para PC y para generar el canvas) */
         .presupuesto-hoja {
-            width: 595px;
-            height: 842px;
+            width: 800px;
+            height: 1131px;
             background-image: url('plantilla mas limpia.jpg');
             background-size: cover;
             background-position: center;
             position: relative;
             background-color: #ffffff;
-            transform-origin: top left;
-        }
-
-        /* Contenedor que autoajusta la escala para que encaje perfecto en cualquier pantalla de móvil */
-        .preview-container-fluid {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            background: #0f172a;
-            border-radius: 1rem;
-            padding: 12px;
-            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
         }
 
         @media print {
             body * { visibility: hidden; }
             #captura-area, #captura-area * { visibility: visible; }
-            #captura-area { position: absolute; left: 0; top: 0; transform: none !important; }
+            #captura-area { position: absolute; left: 0; top: 0; }
             .no-print { display: none; }
         }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen py-4 px-3 md:py-10 md:px-4">
+<body class="bg-slate-900 min-h-screen py-6 px-3 md:py-10 md:px-4">
 
-    <div class="max-w-3xl mx-auto flex flex-col items-center">
+    <div class="max-w-4xl mx-auto flex flex-col items-center">
         
         <!-- CABECERA -->
-        <div class="no-print w-full flex items-center justify-between mb-4 px-2 text-white">
+        <div class="no-print w-full flex items-center justify-between mb-6 px-2 text-white">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2 rounded-xl font-bold text-base shadow-lg">RC</div>
+                <div class="bg-blue-600 p-2.5 rounded-xl font-bold text-lg shadow-lg">RC</div>
                 <div>
-                    <h2 class="font-bold text-sm md:text-base leading-tight">Reformas Integrales Carrascosa</h2>
+                    <h2 class="font-bold text-base md:text-lg leading-tight">Reformas Integrales Carrascosa</h2>
                     <p class="text-xs text-slate-400">Generador de Presupuestos</p>
                 </div>
             </div>
-            <div class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700">
-                Vista Móvil Optimizada 📱
+            <div class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
+                Sistema Híbrido Activo ⚡
             </div>
         </div>
 
         <!-- PANEL DE CONTROL -->
-        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-4 border border-slate-800">
-            <h1 class="text-lg md:text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-6 border border-slate-800">
+            <h1 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>🛠️</span> Rellenar Datos del Presupuesto
             </h1>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
                     <input type="text" id="val-nombre" placeholder="Ej: Alejandro" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
                     <input type="text" id="val-telefono" placeholder="Ej: 622 22 22 22" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Dirección</label>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Dirección</label>
                     <input type="text" id="val-direccion" placeholder="Ej: C/ Calle Los Negros, 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Fecha</label>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
                     <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
                     <input type="number" id="val-cuenta" placeholder="Ej: 2500" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-white border-blue-300 focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 
                 <!-- SECCIÓN DE PRECIO E IVA -->
-                <div class="md:col-span-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
-                        <label class="block text-xs md:text-sm font-semibold text-slate-700">Importe Base / Total (€)</label>
-                        <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
+                <div class="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
+                        <label class="block text-sm font-semibold text-slate-700">Importe Base / Total (€)</label>
+                        <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
                             <span class="text-xs font-bold text-slate-600">Cálculo:</span>
-                            <label class="flex items-center gap-1 text-xs font-medium cursor-pointer">
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
                                 <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600"> Sin IVA
                             </label>
-                            <label class="flex items-center gap-1 text-xs font-medium cursor-pointer">
+                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
                                 <input type="radio" name="tipo-iva" value="con" class="text-blue-600"> Con IVA (+21%)
                             </label>
                         </div>
                     </div>
                     <input type="number" id="val-total" placeholder="Ej: 5000" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1">Introduce la cantidad para autocalcular.</p>
+                    <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1.5">Introduce la cantidad para autocalcular.</p>
                 </div>
             </div>
 
-            <div class="mb-4 border-t pt-3">
+            <div class="mb-6 border-t pt-4">
                 <div>
-                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (pulsa Enter para nueva viñeta)</label>
-                    <textarea id="val-trabajos" rows="5" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="• Suministro y colocación..."></textarea>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (pulsa Enter para nueva viñeta)</label>
+                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="• Suministro y colocación..."></textarea>
                 </div>
             </div>
 
-            <!-- Botones de Acción -->
-            <div class="flex flex-wrap gap-2.5 justify-end">
-                <button onclick="descargarJPG()" class="flex-1 md:flex-none bg-slate-800 text-white px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-slate-700 shadow transition flex items-center justify-center gap-2">📸 Descargar JPG</button>
-                <button onclick="descargarPDF()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-blue-500 shadow transition flex items-center justify-center gap-2">📄 Descargar PDF</button>
+            <!-- BOTONES Y ACCESO MÓVIL / PC -->
+            <div class="flex flex-col sm:flex-row gap-3 justify-between items-center pt-2 border-t">
+                <!-- Botón especial solo visible en móvil para abrir modal -->
+                <button onclick="abrirModalPreview()" class="w-full sm:w-auto md:hidden bg-indigo-600 text-white px-5 py-3 rounded-xl text-sm font-bold shadow-lg hover:bg-indigo-500 transition flex items-center justify-center gap-2">
+                    👁️ Ver Vista Previa del Presupuesto
+                </button>
+
+                <div class="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
+                    <button onclick="descargarJPG()" class="flex-1 sm:flex-none bg-slate-800 text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-slate-700 shadow transition flex items-center justify-center gap-2">📸 Descargar JPG</button>
+                    <button onclick="descargarPDF()" class="flex-1 sm:flex-none bg-blue-600 text-white px-5 py-3 rounded-xl text-sm font-semibold hover:bg-blue-500 shadow transition flex items-center justify-center gap-2">📄 Descargar PDF</button>
+                </div>
             </div>
         </div>
 
-        <!-- AVISO VISTA COMPLETA -->
-        <div class="no-print w-full mb-1.5 px-1 flex items-center justify-between text-[11px] text-slate-400">
-            <span>✨ Ajuste automático adaptado a tu pantalla</span>
-            <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300">Escala Fluida</span>
-        </div>
-
-        <!-- VISTA PREVIA FLUIDA (SE ADAPTARÁ AUTOMÁTICAMENTE AL ANCHO DEL MÓVIL SIN CORTARSE) -->
-        <div id="contenedor-preview-padre" class="preview-container-fluid border border-slate-800 shadow-2xl">
-            <div id="captura-area" class="presupuesto-hoja text-slate-800 shadow-md">
-                
-                <!-- DATOS CLIENTE (Proporcionales a 595px) -->
-                <div class="absolute flex flex-col justify-between" style="top: 42px; left: 405px; width: 175px; height: 80px;">
-                    <div id="out-nombre" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-direccion" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-telefono" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-fecha" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap;"></div>
-                </div>
-
-                <!-- TRABAJOS A REALIZAR -->
-                <div class="absolute" style="top: 249px; left: 52px; width: 498px; height: 164px;">
-                    <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[9.5px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
-                </div>
-
-                <!-- ZONA INFERIOR -->
-                <div class="absolute flex items-center gap-2" style="top: 639px; left: 52px; width: 498px;">
-                    <span class="text-[9.5px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
-                    <div id="out-cuenta" class="font-bold text-[10.5px]" style="color: #1e3a8a; width: 110px; line-height: normal;"></div>
-                </div>
-
-                <div class="absolute text-center text-[9.5px] font-medium" style="top: 684px; left: 52px; width: 498px; color: #dc2626;">
-                    Mano de obra y desplazamiento incluido
-                </div>
-
-                <!-- BLOQUE TOTAL -->
-                <div class="absolute flex items-center gap-2" style="top: 641px; left: 349px;">
-                    <div class="text-right leading-tight">
-                        <div id="out-label-iva" class="font-bold tracking-wider text-[11px]" style="color: #2b2b2b;">TOTAL:</div>
-                        <div id="out-sublabel-iva" class="font-semibold text-[8.5px]" style="color: #1e3a8a;">(SIN IVA)</div>
-                    </div>
-                    <div class="bg-white border border-slate-400 rounded px-1.5 flex items-center justify-center" style="width: 130px; height: 28px;">
-                        <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 11.5px; line-height: 1; padding-bottom: 1px;"></div>
-                    </div>
-                </div>
-
+        <!-- VISTA PREVIA NORMAL (VISIBLE EN PC, OCULTA EN MÓVIL) -->
+        <div class="no-print hidden md:flex flex-col items-center w-full">
+            <div class="w-full mb-2 px-1">
+                <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vista Previa en Directo (PC)</span>
+            </div>
+            <div class="overflow-x-auto w-full flex justify-center bg-slate-950 p-6 rounded-2xl border border-slate-800">
+                <!-- SE INyecta la hoja aquí por JS o se clona -->
+                <div id="preview-pc-container"></div>
             </div>
         </div>
 
     </div>
 
-    <!-- Script JavaScript con autoescala inteligente para móviles -->
+    <!-- VENTANA MODAL (POPUP) PARA MÓVIL -->
+    <div id="modal-preview" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex flex-col items-center justify-start p-3 overflow-y-auto">
+        <div class="w-full max-w-xl flex justify-between items-center text-white mb-3 px-2 pt-2">
+            <h3 class="font-bold text-base flex items-center gap-2">📄 Vista Previa del Presupuesto</h3>
+            <button onclick="cerrarModalPreview()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow hover:bg-rose-500 transition">✕ Cerrar Vista</button>
+        </div>
+
+        <!-- Contenedor donde se mostrará la hoja escalada para que quepa perfecta en la pantalla del móvil -->
+        <div id="modal-content-wrapper" class="bg-slate-900 p-2 rounded-2xl border border-slate-700 shadow-2xl mb-6 overflow-hidden flex justify-center w-full">
+            <!-- Aquí clonaremos o moveremos la hoja para verla -->
+        </div>
+
+        <div class="flex gap-3 w-full max-w-xl pb-6">
+            <button onclick="descargarJPG(); cerrarModalPreview();" class="flex-1 bg-slate-800 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-slate-700 flex items-center justify-center gap-2">📸 Descargar JPG</button>
+            <button onclick="descargarPDF(); cerrarModalPreview();" class="flex-1 bg-blue-600 text-white py-3 rounded-xl text-sm font-bold shadow hover:bg-blue-500 flex items-center justify-center gap-2">📄 Descargar PDF</button>
+        </div>
+    </div>
+
+    <!-- ELEMENTO REAL DE CAPTURA (OCULTO EN EL FLUJO VISUAL PERO ACTIVO PARA EL DOM) -->
+    <div style="position: absolute; left: -9999px; top: -9999px;">
+        <div id="captura-area" class="presupuesto-hoja text-slate-800">
+            <!-- DATOS CLIENTE -->
+            <div class="absolute flex flex-col justify-between" style="top: 56px; left: 545px; width: 235px; height: 108px;">
+                <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-telefono" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-fecha" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap;"></div>
+            </div>
+
+            <!-- TRABAJOS A REALIZAR -->
+            <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 220px;">
+                <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
+            </div>
+
+            <!-- ZONA INFERIOR -->
+            <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
+                <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
+                <div id="out-cuenta" class="font-bold text-[14px]" style="color: #1e3a8a; width: 150px; line-height: normal;"></div>
+            </div>
+
+            <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
+                Mano de obra y desplazamiento incluido
+            </div>
+
+            <!-- BLOQUE TOTAL -->
+            <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
+                <div class="text-right leading-tight">
+                    <div id="out-label-iva" class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
+                    <div id="out-sublabel-iva" class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
+                </div>
+                <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
+                    <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script JavaScript -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -193,27 +210,15 @@
         const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
 
-        // Función que escala de forma matemática la hoja para que quepa entera a lo ancho de cualquier pantalla sin barras de desplazamiento
-        function ajustarEscalaMovil() {
-            const hoja = document.getElementById('captura-area');
-            const padre = document.getElementById('contenedor-preview-padre');
-            const anchoDisponible = padre.clientWidth - 24; // descontar padding
-            
-            if (anchoDisponible < 595) {
-                const escala = anchoDisponible / 595;
-                hoja.style.transform = `scale(${escala})`;
-                padre.style.height = `${842 * escala + 24}px`;
-            } else {
-                hoja.style.transform = 'scale(1)';
-                padre.style.height = '866px';
-            }
-        }
+        const capturaArea = document.getElementById('captura-area');
+        const previewPcContainer = document.getElementById('preview-pc-container');
+        const modalPreview = document.getElementById('modal-preview');
+        const modalContentWrapper = document.getElementById('modal-content-wrapper');
 
-        window.addEventListener('resize', ajustarEscalaMovil);
-        window.addEventListener('load', () => {
-            ajustarEscalaMovil();
-            setTimeout(ajustarEscalaMovil, 200);
-        });
+        // Clonar para PC
+        const clonPc = capturaArea.cloneNode(true);
+        clonPc.id = 'preview-pc';
+        previewPcContainer.appendChild(clonPc);
 
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
@@ -270,27 +275,36 @@
             const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
 
+            let txtSub = "(SIN IVA)";
+            let txtDetalle = "Cantidad neta sin impuestos añadidos.";
+            let precioFinal = baseVal;
+            let cuentaVal = 0;
+
             if (!isNaN(baseVal)) {
-                let precioFinal = baseVal;
                 if (modo === 'con') {
                     precioFinal = baseVal * 1.21;
-                    oSublabelIva.textContent = "(CON IVA 21%)";
-                    infoIvaDetalle.textContent = `Base: ${formatearMoneda(baseVal)} € + 21% IVA = ${formatearMoneda(precioFinal)} € final.`;
-                } else {
-                    oSublabelIva.textContent = "(SIN IVA)";
-                    infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
+                    txtSub = "(CON IVA 21%)";
+                    txtDetalle = `Base: ${formatearMoneda(baseVal)} € + 21% IVA = ${formatearMoneda(precioFinal)} € final.`;
                 }
-
-                const cuentaVal = precioFinal / 2;
+                cuentaVal = precioFinal / 2;
                 vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
-
-                oTotal.textContent = formatearMoneda(precioFinal) + " €";
-                oCuenta.textContent = formatearMoneda(cuentaVal) + " €";
             } else {
                 vCuenta.value = '';
-                oTotal.textContent = '';
-                oCuenta.textContent = '';
             }
+
+            infoIvaDetalle.textContent = txtDetalle;
+            
+            // Actualizar elementos reales y su clon de PC
+            const elementosTotales = [oTotal, document.getElementById('preview-pc').querySelector('#out-total')];
+            const elementosCuentas = [oCuenta, document.getElementById('preview-pc').querySelector('#out-cuenta')];
+            const elementosSubs = [oSublabelIva, document.getElementById('preview-pc').querySelector('#out-sublabel-iva')];
+
+            const totalStr = !isNaN(baseVal) ? formatearMoneda(precioFinal) + " €" : "";
+            const cuentaStr = !isNaN(baseVal) ? formatearMoneda(cuentaVal) + " €" : "";
+
+            elementosTotales.forEach(el => el.textContent = totalStr);
+            elementosCuentas.forEach(el => el.textContent = cuentaStr);
+            elementosSubs.forEach(el => el.textContent = txtSub);
         }
 
         vCuenta.addEventListener('input', function() {
@@ -303,23 +317,38 @@
                     baseVal = precioFinal / 1.21;
                 }
                 vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
-                oTotal.textContent = formatearMoneda(precioFinal) + " €";
-                oCuenta.textContent = formatearMoneda(cuentaVal) + " €";
+                calcularDesdeTotal();
             }
         });
 
         vTotal.addEventListener('input', calcularDesdeTotal);
-
-        radiosIva.forEach(radio => {
-            radio.addEventListener('change', calcularDesdeTotal);
-        });
+        radiosIva.forEach(radio => radio.addEventListener('change', calcularDesdeTotal));
 
         function actualizarVista() {
-            oNombre.textContent = vNombre.value;
-            oDireccion.textContent = vDireccion.value;
-            oTelefono.textContent = vTelefono.value;
-            oFecha.textContent = formatearFecha(vFecha.value);
-            oTrabajos.textContent = vTrabajos.value;
+            const nombreVal = vNombre.value;
+            const dirVal = vDireccion.value;
+            const telVal = vTelefono.value;
+            const fechaVal = formatearFecha(vFecha.value);
+            const trabajosVal = vTrabajos.value;
+
+            // Sincronizar maestro y clon PC
+            const clon = document.getElementById('preview-pc');
+
+            capturaArea.querySelector('#out-nombre').textContent = nombreVal;
+            clon.querySelector('#out-nombre').textContent = nombreVal;
+
+            capturaArea.querySelector('#out-direccion').textContent = dirVal;
+            clon.querySelector('#out-direccion').textContent = dirVal;
+
+            capturaArea.querySelector('#out-telefono').textContent = telVal;
+            clon.querySelector('#out-telefono').textContent = telVal;
+
+            capturaArea.querySelector('#out-fecha').textContent = fechaVal;
+            clon.querySelector('#out-fecha').textContent = fechaVal;
+
+            capturaArea.querySelector('#out-trabajos').textContent = trabajosVal;
+            clon.querySelector('#out-trabajos').textContent = trabajosVal;
+
             calcularDesdeTotal();
         }
 
@@ -330,13 +359,29 @@
 
         actualizarVista();
 
+        // Control del Modal Móvil
+        function abrirModalPreview() {
+            modalContentWrapper.innerHTML = '';
+            const clonModal = capturaArea.cloneNode(true);
+            clonModal.id = 'preview-modal-hoja';
+            modalContentWrapper.appendChild(clonModal);
+
+            // Escalar para que encaje perfecto en el ancho de la pantalla del móvil dentro del modal
+            const anchoPantalla = window.innerWidth - 40;
+            const escala = anchoPantalla / 800;
+            clonModal.style.transformOrigin = 'top center';
+            clonModal.style.transform = `scale(${escala})`;
+            modalContentWrapper.style.height = `${1131 * escala}px`;
+
+            modalPreview.classList.remove('hidden');
+        }
+
+        function cerrarModalPreview() {
+            modalPreview.classList.add('hidden');
+        }
+
         function descargarJPG() {
-            const elemento = document.getElementById('captura-area');
-            const escalaOriginal = elemento.style.transform;
-            elemento.style.transform = 'scale(1)'; // Captura a resolución real y nítida
-            
-            html2canvas(elemento, { scale: 2, useCORS: true }).then(canvas => {
-                elemento.style.transform = escalaOriginal;
+            html2canvas(capturaArea, { scale: 2, useCORS: true }).then(canvas => {
                 const enlace = document.createElement('a');
                 enlace.download = `Presupuesto_${vNombre.value || 'cliente'}.jpg`;
                 enlace.href = canvas.toDataURL('image/jpeg', 0.95);
@@ -346,12 +391,7 @@
 
         function descargarPDF() {
             const { jsPDF } = window.jspdf;
-            const elemento = document.getElementById('captura-area');
-            const escalaOriginal = elemento.style.transform;
-            elemento.style.transform = 'scale(1)'; // Captura a resolución real y nítida
-
-            html2canvas(elemento, { scale: 2, useCORS: true }).then(canvas => {
-                elemento.style.transform = escalaOriginal;
+            html2canvas(capturaArea, { scale: 2, useCORS: true }).then(canvas => {
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
