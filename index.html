@@ -21,61 +21,25 @@
             background-size: cover;
             background-position: center;
             position: relative;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            transform-origin: top center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            transform-origin: top left;
         }
 
-        /* Contenedor adaptativo para que en móvil parezca un minifolio */
-        .presupuesto-container-preview {
+        /* Contenedor que adapta la escala perfectamente en móvil */
+        .preview-wrapper {
             width: 100%;
+            overflow-x: auto;
             display: flex;
             justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        @media (max-width: 840px) {
-            .presupuesto-container-preview {
-                /* Altura controlada para simular el folio miniatura en móvil */
-                height: 480px; 
-            }
-            .presupuesto-hoja {
-                /* Escala reducida para que se vea el folio entero como miniatura */
-                transform: scale(0.38);
-                margin-top: -330px;
-                margin-bottom: -330px;
-            }
-        }
-
-        /* Estilos para el Modo Zoom Pantalla Completa */
-        #modal-zoom {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.95);
-            z-index: 9999;
-            overflow: auto;
-            padding: 20px 10px;
-            align-items: center;
-            justify-content: center;
-        }
-        #modal-zoom.active {
-            display: flex;
-        }
-        .zoom-inner-wrapper {
-            transform: scale(0.85);
-            transform-origin: top center;
-        }
-        @media (min-width: 768px) {
-            .zoom-inner-wrapper {
-                transform: scale(1);
-            }
+            background: #0f172a;
+            border-radius: 1rem;
+            padding: 16px 0;
         }
 
         @media print {
             body * { visibility: hidden; }
             #captura-area, #captura-area * { visibility: visible; }
-            #captura-area { position: absolute; left: 0; top: 0; width: 800px; transform: none; box-shadow: none; }
+            #captura-area { position: absolute; left: 0; top: 0; width: 800px; transform: none !important; box-shadow: none; }
             .no-print { display: none; }
         }
     </style>
@@ -162,16 +126,13 @@
             </div>
         </div>
 
-        <!-- BOTÓN DE AMPLIAR VISTA PREVIA (LUPA) -->
-        <div class="no-print w-full flex justify-between items-center mb-3 px-1">
-            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vista Previa del Presupuesto</span>
-            <button onclick="abrirZoom()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-600/30 transition flex items-center gap-1.5">
-                🔍 Ampliar / Ver Detalle
-            </button>
+        <!-- TÍTULO VISTA PREVIA -->
+        <div class="no-print w-full mb-2 px-1">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vista Previa del Presupuesto (Haz zoom con los dedos si lo necesitas)</span>
         </div>
 
-        <!-- CONTENEDOR DE LA VISTA PREVIA (MINIFOLIO) -->
-        <div class="presupuesto-container-preview bg-slate-950/50 p-2 rounded-xl border border-slate-800 shadow-inner">
+        <!-- VISTA PREVIA DE LA HOJA -->
+        <div id="contenedor-preview-padre" class="preview-wrapper border border-slate-800 shadow-inner">
             <div id="captura-area" class="presupuesto-hoja text-slate-800 rounded-lg">
                 
                 <!-- DATOS CLIENTE -->
@@ -213,18 +174,6 @@
 
     </div>
 
-    <!-- VENTANA MODAL PARA ZOOM / AMPLIAR -->
-    <div id="modal-zoom">
-        <div class="absolute top-4 right-4 z-50">
-            <button onclick="cerrarZoom()" class="bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
-                ✕ Cerrar Zoom
-            </button>
-        </div>
-        <div class="zoom-inner-wrapper">
-            <div id="modal-content-spot"></div>
-        </div>
-    </div>
-
     <!-- Script JavaScript -->
     <script>
         const vNombre = document.getElementById('val-nombre');
@@ -245,6 +194,25 @@
         const oTotal = document.getElementById('out-total');
         const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
+
+        // Autoajustar escala del folio en pantallas pequeñas
+        function ajustarEscalaMovil() {
+            const hoja = document.getElementById('captura-area');
+            const padre = document.getElementById('contenedor-preview-padre');
+            const anchoPantalla = padre.clientWidth - 20; // 20px de margen
+            
+            if (anchoPantalla < 800) {
+                const escala = anchoPantalla / 800;
+                hoja.style.transform = `scale(${escala})`;
+                padre.style.height = `${1131 * escala}px`;
+            } else {
+                hoja.style.transform = 'scale(1)';
+                padre.style.height = '1150px';
+            }
+        }
+
+        window.addEventListener('resize', ajustarEscalaMovil);
+        window.addEventListener('load', ajustarEscalaMovil);
 
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
@@ -360,27 +328,15 @@
         });
 
         actualizarVista();
-
-        function abrirZoom() {
-            const hoja = document.getElementById('captura-area');
-            const spot = document.getElementById('modal-content-spot');
-            spot.innerHTML = '';
-            spot.appendChild(hoja.cloneNode(true));
-            document.getElementById('modal-zoom').classList.add('active');
-        }
-
-        function cerrarZoom() {
-            const spot = document.getElementById('modal-content-spot');
-            const hojaClonada = spot.firstElementChild;
-            if (hojaClonada) {
-                document.querySelector('.presupuesto-container-preview').appendChild(hojaClonada);
-            }
-            document.getElementById('modal-zoom').classList.remove('active');
-        }
+        setTimeout(ajustarEscalaMovil, 100);
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
+            const escalaOriginal = elemento.style.transform;
+            elemento.style.transform = 'scale(1)'; // Asegurar captura limpia a tamaño real
+            
             html2canvas(elemento, { scale: 2 }).then(canvas => {
+                elemento.style.transform = escalaOriginal;
                 const enlace = document.createElement('a');
                 enlace.download = `Presupuesto_${vNombre.value || 'cliente'}.jpg`;
                 enlace.href = canvas.toDataURL('image/jpeg', 0.95);
@@ -391,7 +347,11 @@
         function descargarPDF() {
             const { jsPDF } = window.jspdf;
             const elemento = document.getElementById('captura-area');
+            const escalaOriginal = elemento.style.transform;
+            elemento.style.transform = 'scale(1)';
+
             html2canvas(elemento, { scale: 2 }).then(canvas => {
+                elemento.style.transform = escalaOriginal;
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
