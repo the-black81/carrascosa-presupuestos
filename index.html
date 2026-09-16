@@ -64,9 +64,9 @@
                     <input type="text" id="val-direccion" placeholder="Ej: C/ República Argentina 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
-                    <!-- Campo de fecha con las barras / ya puestas de serie para facilitar el rellenado -->
-                    <input type="text" id="val-fecha" value=" / / " class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha (Selecciona en el calendario)</label>
+                    <!-- Campo de fecha interactivo con calendario nativo -->
+                    <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
@@ -133,7 +133,7 @@
 
     </div>
 
-    <!-- Script de sincronización, saltos de viñeta y descarga -->
+    <!-- Script de sincronización, formato de fecha y descarga -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -168,11 +168,21 @@
             }
         });
 
+        // Función para transformar el formato de fecha de la máquina (YYYY-MM-DD) al formato español (DD / MM / YYYY)
+        function formatearFechaEspanol(fechaStr) {
+            if (!fechaStr) return "";
+            const partes = fechaStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]} / ${partes[1]} / ${partes[0]}`;
+            }
+            return fechaStr;
+        }
+
         function actualizarVista() {
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
-            oFecha.textContent = vFecha.value;
+            oFecha.textContent = formatearFechaEspanol(vFecha.value);
             oCuenta.textContent = vCuenta.value;
             oTotal.textContent = vTotal.value;
             oTrabajos.textContent = vTrabajos.value;
@@ -180,6 +190,7 @@
 
         [vNombre, vDireccion, vTelefono, vFecha, vCuenta, vTotal, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarVista);
+            el.addEventListener('change', actualizarVista); // Importante para el calendario
         });
 
         actualizarVista();
