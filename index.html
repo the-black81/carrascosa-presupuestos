@@ -13,7 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor A4 con tu plantilla exacta */
+        /* Contenedor A4 base */
         .presupuesto-hoja {
             width: 800px;
             height: 1131px;
@@ -21,36 +21,54 @@
             background-size: cover;
             background-position: center;
             position: relative;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            /* Origen de escala para móviles */
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
             transform-origin: top center;
         }
 
-        /* Contenedor envolvente para gestionar el espacio en móvil automáticamente */
-        .presupuesto-wrapper {
-            width: 800px;
-            height: 1131px;
-            margin: 0 auto;
+        /* Contenedor adaptativo para que en móvil parezca un minifolio */
+        .presupuesto-container-preview {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
         }
 
         @media (max-width: 840px) {
-            /* En pantallas de móvil/tablet estrechas, calculamos la escala dinámicamente */
-            .presupuesto-wrapper {
-                width: 100vw;
-                /* Altura proporcional basada en la escala de la pantalla para evitar huecos gigantes */
-                height: calc(100vw * (1131 / 800));
-                max-width: 800px;
-                max-height: 1131px;
+            .presupuesto-container-preview {
+                /* Altura controlada para simular el folio miniatura en móvil */
+                height: 480px; 
             }
             .presupuesto-hoja {
-                /* Escala la hoja entera midiendo el ancho disponible de la pantalla del móvil */
-                transform: scale(calc(100vw / 800));
+                /* Escala reducida para que se vea el folio entero como miniatura */
+                transform: scale(0.38);
+                margin-top: -330px;
+                margin-bottom: -330px;
             }
-            /* Si la pantalla es muy pequeña, limitamos al 100vw real */
-            @media (max-width: 800px) {
-                .presupuesto-hoja {
-                    transform: scale(calc(100vw / 800));
-                }
+        }
+
+        /* Estilos para el Modo Zoom Pantalla Completa */
+        #modal-zoom {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.95);
+            z-index: 9999;
+            overflow: auto;
+            padding: 20px 10px;
+            align-items: center;
+            justify-content: center;
+        }
+        #modal-zoom.active {
+            display: flex;
+        }
+        .zoom-inner-wrapper {
+            transform: scale(0.85);
+            transform-origin: top center;
+        }
+        @media (min-width: 768px) {
+            .zoom-inner-wrapper {
+                transform: scale(1);
             }
         }
 
@@ -81,7 +99,7 @@
         </div>
 
         <!-- PANEL DE CONTROL -->
-        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-8 border border-slate-800">
+        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-6 border border-slate-800">
             <h1 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>🛠️</span> Rellenar Datos del Presupuesto
             </h1>
@@ -144,8 +162,16 @@
             </div>
         </div>
 
-        <!-- VISTA PREVIA DE LA HOJA (ENVUELTA PARA RESPONSIVE) -->
-        <div class="presupuesto-wrapper overflow-hidden">
+        <!-- BOTÓN DE AMPLIAR VISTA PREVIA (LUPA) -->
+        <div class="no-print w-full flex justify-between items-center mb-3 px-1">
+            <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Vista Previa del Presupuesto</span>
+            <button onclick="abrirZoom()" class="bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold hover:bg-blue-600/30 transition flex items-center gap-1.5">
+                🔍 Ampliar / Ver Detalle
+            </button>
+        </div>
+
+        <!-- CONTENEDOR DE LA VISTA PREVIA (MINIFOLIO) -->
+        <div class="presupuesto-container-preview bg-slate-950/50 p-2 rounded-xl border border-slate-800 shadow-inner">
             <div id="captura-area" class="presupuesto-hoja text-slate-800 rounded-lg">
                 
                 <!-- DATOS CLIENTE -->
@@ -185,6 +211,18 @@
             </div>
         </div>
 
+    </div>
+
+    <!-- VENTANA MODAL PARA ZOOM / AMPLIAR -->
+    <div id="modal-zoom">
+        <div class="absolute top-4 right-4 z-50">
+            <button onclick="cerrarZoom()" class="bg-red-600 text-white px-4 py-2 rounded-xl font-bold text-sm shadow-lg flex items-center gap-2">
+                ✕ Cerrar Zoom
+            </button>
+        </div>
+        <div class="zoom-inner-wrapper">
+            <div id="modal-content-spot"></div>
+        </div>
     </div>
 
     <!-- Script JavaScript -->
@@ -322,6 +360,23 @@
         });
 
         actualizarVista();
+
+        function abrirZoom() {
+            const hoja = document.getElementById('captura-area');
+            const spot = document.getElementById('modal-content-spot');
+            spot.innerHTML = '';
+            spot.appendChild(hoja.cloneNode(true));
+            document.getElementById('modal-zoom').classList.add('active');
+        }
+
+        function cerrarZoom() {
+            const spot = document.getElementById('modal-content-spot');
+            const hojaClonada = spot.firstElementChild;
+            if (hojaClonada) {
+                document.querySelector('.presupuesto-container-preview').appendChild(hojaClonada);
+            }
+            document.getElementById('modal-zoom').classList.remove('active');
+        }
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
