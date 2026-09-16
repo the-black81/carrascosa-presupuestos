@@ -155,7 +155,7 @@
 
     </div>
 
-    <!-- Script con formato de miles español -->
+    <!-- Script con formato de miles forzado desde 1.000 en adelante -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -207,13 +207,27 @@
             return fechaStr;
         }
 
-        // Función para formatear números al estilo español (con puntos de miles y comas para decimales si los hubiera)
+        // Función corregida para forzar siempre el punto de miles a partir de 1.000
         function formatearMoneda(num) {
             if (isNaN(num)) return "";
-            return new Intl.NumberFormat('es-ES', { 
-                minimumFractionDigits: 0, 
-                maximumFractionDigits: 2 
-            }).format(num);
+            let redond = Math.round(num * 100) / 100;
+            let partes = redond.toFixed(2).split('.');
+            let entero = partes[0];
+            let decimales = partes[1];
+
+            // Si tiene exactamente 4 dígitos (ej: 1000 a 9999), metemos el punto de miles a mano
+            if (entero.length === 4) {
+                entero = entero.charAt(0) + '.' + entero.slice(1);
+            } else if (entero.length > 4) {
+                // Para 5 cifras o más, usamos el formateador estándar español
+                entero = new Intl.NumberFormat('es-ES').format(parseInt(entero));
+            }
+
+            if (decimales === '00') {
+                return entero;
+            } else {
+                return entero + ',' + decimales;
+            }
         }
 
         function calcularDesdeTotal() {
@@ -234,7 +248,6 @@
                 const cuentaVal = precioFinal / 2;
                 vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
 
-                // Pintamos ya con formato de miles oficial en la hoja impresa/capturada
                 oTotal.textContent = formatearMoneda(precioFinal) + " €";
                 oCuenta.textContent = formatearMoneda(cuentaVal) + " €";
             } else {
