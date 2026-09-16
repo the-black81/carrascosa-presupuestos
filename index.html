@@ -13,159 +13,157 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor A4 con dimensiones fijas reales para la captura perfecta */
+        /* Contenedor A4 optimizado a 595px (Ancho exacto proporcional web/móvil) */
         .presupuesto-hoja {
-            width: 800px;
-            height: 1131px;
-            min-width: 800px;
+            width: 595px;
+            height: 842px;
             background-image: url('plantilla mas limpia.jpg');
             background-size: cover;
             background-position: center;
             position: relative;
             background-color: #ffffff;
+            transform-origin: top left;
         }
 
-        /* Contenedor con scroll horizontal suave en móviles si la pantalla es menor de 800px */
-        .preview-container-scroll {
+        /* Contenedor que autoajusta la escala para que encaje perfecto en cualquier pantalla de móvil */
+        .preview-container-fluid {
             width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            background: #0f172a;
-            border-radius: 1rem;
-            padding: 20px;
             display: flex;
             justify-content: center;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+            background: #0f172a;
+            border-radius: 1rem;
+            padding: 12px;
+            overflow: hidden;
         }
 
         @media print {
             body * { visibility: hidden; }
             #captura-area, #captura-area * { visibility: visible; }
-            #captura-area { position: absolute; left: 0; top: 0; }
+            #captura-area { position: absolute; left: 0; top: 0; transform: none !important; }
             .no-print { display: none; }
         }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen py-6 px-3 md:py-10 md:px-4">
+<body class="bg-slate-900 min-h-screen py-4 px-3 md:py-10 md:px-4">
 
-    <div class="max-w-4xl mx-auto flex flex-col items-center">
+    <div class="max-w-3xl mx-auto flex flex-col items-center">
         
         <!-- CABECERA -->
-        <div class="no-print w-full flex items-center justify-between mb-6 px-2 text-white">
+        <div class="no-print w-full flex items-center justify-between mb-4 px-2 text-white">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 p-2.5 rounded-xl font-bold text-lg shadow-lg">RC</div>
+                <div class="bg-blue-600 p-2 rounded-xl font-bold text-base shadow-lg">RC</div>
                 <div>
-                    <h2 class="font-bold text-base md:text-lg leading-tight">Reformas Integrales Carrascosa</h2>
+                    <h2 class="font-bold text-sm md:text-base leading-tight">Reformas Integrales Carrascosa</h2>
                     <p class="text-xs text-slate-400">Generador de Presupuestos</p>
                 </div>
             </div>
-            <div class="text-xs bg-slate-800 text-slate-300 px-3 py-1.5 rounded-lg border border-slate-700">
-                Sistema Estable 🟢
+            <div class="text-xs bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700">
+                Vista Móvil Optimizada 📱
             </div>
         </div>
 
         <!-- PANEL DE CONTROL -->
-        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-6 border border-slate-800">
-            <h1 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
+        <div class="no-print w-full bg-white p-4 md:p-6 rounded-2xl shadow-2xl mb-4 border border-slate-800">
+            <h1 class="text-lg md:text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
                 <span>🛠️</span> Rellenar Datos del Presupuesto
             </h1>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
                     <input type="text" id="val-nombre" placeholder="Ej: Alejandro" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
                     <input type="text" id="val-telefono" placeholder="Ej: 622 22 22 22" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Dirección</label>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Dirección</label>
                     <input type="text" id="val-direccion" placeholder="Ej: C/ Calle Los Negros, 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Fecha</label>
                     <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
                     <input type="number" id="val-cuenta" placeholder="Ej: 2500" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-white border-blue-300 focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 
                 <!-- SECCIÓN DE PRECIO E IVA -->
-                <div class="md:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-2">
-                        <label class="block text-sm font-semibold text-slate-700">Importe Base / Total (€)</label>
-                        <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
+                <div class="md:col-span-2 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-2">
+                        <label class="block text-xs md:text-sm font-semibold text-slate-700">Importe Base / Total (€)</label>
+                        <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
                             <span class="text-xs font-bold text-slate-600">Cálculo:</span>
-                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                            <label class="flex items-center gap-1 text-xs font-medium cursor-pointer">
                                 <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600"> Sin IVA
                             </label>
-                            <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                            <label class="flex items-center gap-1 text-xs font-medium cursor-pointer">
                                 <input type="radio" name="tipo-iva" value="con" class="text-blue-600"> Con IVA (+21%)
                             </label>
                         </div>
                     </div>
                     <input type="number" id="val-total" placeholder="Ej: 5000" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1.5">Introduce la cantidad y se calculará automáticamente.</p>
+                    <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1">Introduce la cantidad para autocalcular.</p>
                 </div>
             </div>
 
-            <div class="mb-6 border-t pt-4">
+            <div class="mb-4 border-t pt-3">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (pulsa Enter para nueva viñeta)</label>
-                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="• Suministro y colocación..."></textarea>
+                    <label class="block text-xs md:text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (pulsa Enter para nueva viñeta)</label>
+                    <textarea id="val-trabajos" rows="5" class="w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="• Suministro y colocación..."></textarea>
                 </div>
             </div>
 
             <!-- Botones de Acción -->
-            <div class="flex flex-wrap gap-3 justify-end">
-                <button onclick="descargarJPG()" class="flex-1 md:flex-none bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-700 shadow transition flex items-center justify-center gap-2">📸 Descargar JPG</button>
-                <button onclick="descargarPDF()" class="flex-1 md:flex-none bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-500 shadow transition flex items-center justify-center gap-2">📄 Descargar PDF</button>
+            <div class="flex flex-wrap gap-2.5 justify-end">
+                <button onclick="descargarJPG()" class="flex-1 md:flex-none bg-slate-800 text-white px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-slate-700 shadow transition flex items-center justify-center gap-2">📸 Descargar JPG</button>
+                <button onclick="descargarPDF()" class="flex-1 md:flex-none bg-blue-600 text-white px-4 py-2 rounded-lg text-xs md:text-sm font-semibold hover:bg-blue-500 shadow transition flex items-center justify-center gap-2">📄 Descargar PDF</button>
             </div>
         </div>
 
-        <!-- AVISO MÓVIL -->
-        <div class="no-print w-full mb-2 px-1 flex items-center justify-between text-xs text-slate-400">
-            <span>👉 Desliza la previsualización horizontalmente si es necesario</span>
-            <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300">Tamaño Real A4</span>
+        <!-- AVISO VISTA COMPLETA -->
+        <div class="no-print w-full mb-1.5 px-1 flex items-center justify-between text-[11px] text-slate-400">
+            <span>✨ Ajuste automático adaptado a tu pantalla</span>
+            <span class="bg-slate-800 px-2 py-0.5 rounded text-slate-300">Escala Fluida</span>
         </div>
 
-        <!-- VISTA PREVIA (CON CONTENEDOR DE SCROLL HORIZONTAL PURO) -->
-        <div class="preview-container-scroll border border-slate-800">
-            <div id="captura-area" class="presupuesto-hoja text-slate-800 shadow-2xl rounded">
+        <!-- VISTA PREVIA FLUIDA (SE ADAPTARÁ AUTOMÁTICAMENTE AL ANCHO DEL MÓVIL SIN CORTARSE) -->
+        <div id="contenedor-preview-padre" class="preview-container-fluid border border-slate-800 shadow-2xl">
+            <div id="captura-area" class="presupuesto-hoja text-slate-800 shadow-md">
                 
-                <!-- DATOS CLIENTE -->
-                <div class="absolute flex flex-col justify-between" style="top: 56px; left: 545px; width: 235px; height: 108px;">
-                    <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-telefono" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                    <div id="out-fecha" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap;"></div>
+                <!-- DATOS CLIENTE (Proporcionales a 595px) -->
+                <div class="absolute flex flex-col justify-between" style="top: 42px; left: 405px; width: 175px; height: 80px;">
+                    <div id="out-nombre" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                    <div id="out-direccion" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                    <div id="out-telefono" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                    <div id="out-fecha" class="font-medium text-[10.5px]" style="line-height: 18.5px; white-space: nowrap;"></div>
                 </div>
 
                 <!-- TRABAJOS A REALIZAR -->
-                <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 220px;">
-                    <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
+                <div class="absolute" style="top: 249px; left: 52px; width: 498px; height: 164px;">
+                    <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[9.5px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
                 </div>
 
                 <!-- ZONA INFERIOR -->
-                <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
-                    <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
-                    <div id="out-cuenta" class="font-bold text-[14px]" style="color: #1e3a8a; width: 150px; line-height: normal;"></div>
+                <div class="absolute flex items-center gap-2" style="top: 639px; left: 52px; width: 498px;">
+                    <span class="text-[9.5px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
+                    <div id="out-cuenta" class="font-bold text-[10.5px]" style="color: #1e3a8a; width: 110px; line-height: normal;"></div>
                 </div>
 
-                <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
+                <div class="absolute text-center text-[9.5px] font-medium" style="top: 684px; left: 52px; width: 498px; color: #dc2626;">
                     Mano de obra y desplazamiento incluido
                 </div>
 
                 <!-- BLOQUE TOTAL -->
-                <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
+                <div class="absolute flex items-center gap-2" style="top: 641px; left: 349px;">
                     <div class="text-right leading-tight">
-                        <div id="out-label-iva" class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
-                        <div id="out-sublabel-iva" class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
+                        <div id="out-label-iva" class="font-bold tracking-wider text-[11px]" style="color: #2b2b2b;">TOTAL:</div>
+                        <div id="out-sublabel-iva" class="font-semibold text-[8.5px]" style="color: #1e3a8a;">(SIN IVA)</div>
                     </div>
-                    <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
-                        <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
+                    <div class="bg-white border border-slate-400 rounded px-1.5 flex items-center justify-center" style="width: 130px; height: 28px;">
+                        <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 11.5px; line-height: 1; padding-bottom: 1px;"></div>
                     </div>
                 </div>
 
@@ -174,7 +172,7 @@
 
     </div>
 
-    <!-- Script JavaScript -->
+    <!-- Script JavaScript con autoescala inteligente para móviles -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -194,6 +192,28 @@
         const oTotal = document.getElementById('out-total');
         const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
+
+        // Función que escala de forma matemática la hoja para que quepa entera a lo ancho de cualquier pantalla sin barras de desplazamiento
+        function ajustarEscalaMovil() {
+            const hoja = document.getElementById('captura-area');
+            const padre = document.getElementById('contenedor-preview-padre');
+            const anchoDisponible = padre.clientWidth - 24; // descontar padding
+            
+            if (anchoDisponible < 595) {
+                const escala = anchoDisponible / 595;
+                hoja.style.transform = `scale(${escala})`;
+                padre.style.height = `${842 * escala + 24}px`;
+            } else {
+                hoja.style.transform = 'scale(1)';
+                padre.style.height = '866px';
+            }
+        }
+
+        window.addEventListener('resize', ajustarEscalaMovil);
+        window.addEventListener('load', () => {
+            ajustarEscalaMovil();
+            setTimeout(ajustarEscalaMovil, 200);
+        });
 
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
@@ -308,12 +328,15 @@
             el.addEventListener('change', actualizarVista);
         });
 
-        actualizarVita = actualizarVista;
         actualizarVista();
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
+            const escalaOriginal = elemento.style.transform;
+            elemento.style.transform = 'scale(1)'; // Captura a resolución real y nítida
+            
             html2canvas(elemento, { scale: 2, useCORS: true }).then(canvas => {
+                elemento.style.transform = escalaOriginal;
                 const enlace = document.createElement('a');
                 enlace.download = `Presupuesto_${vNombre.value || 'cliente'}.jpg`;
                 enlace.href = canvas.toDataURL('image/jpeg', 0.95);
@@ -324,7 +347,11 @@
         function descargarPDF() {
             const { jsPDF } = window.jspdf;
             const elemento = document.getElementById('captura-area');
+            const escalaOriginal = elemento.style.transform;
+            elemento.style.transform = 'scale(1)'; // Captura a resolución real y nítida
+
             html2canvas(elemento, { scale: 2, useCORS: true }).then(canvas => {
+                elemento.style.transform = escalaOriginal;
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 const pdfWidth = pdf.internal.pageSize.getWidth();
