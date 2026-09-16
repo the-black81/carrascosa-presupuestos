@@ -43,19 +43,19 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
-                    <input type="text" id="val-nombre" placeholder="Ej: Alejandro" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-nombre" placeholder="Ej: EVA" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
-                    <input type="text" id="val-telefono" placeholder="Ej: 622 00 00 00" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-telefono" placeholder="Ej: 635 42 99 38" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Dirección</label>
-                    <input type="text" id="val-direccion" placeholder="Ej: C/ Camaron de la isla, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-direccion" placeholder="Ej: C/ República Argentina 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
-                    <input type="text" id="val-fecha" value=" / / " class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha (Selecciona en el calendario)</label>
+                    <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer" onchange="actualizarVistaTextos()">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
@@ -139,7 +139,7 @@
 
     </div>
 
-    <!-- Script de cálculo optimizado -->
+    <!-- Script de cálculo y formato de fecha -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -182,7 +182,16 @@
             return 'sin';
         }
 
-        // Función principal que recalcula todo matemáticamente
+        // Convierte la fecha de AAAA-MM-DD a formato DD / MM / AAAA para que quede elegante en la hoja
+        function formatearFecha(fechaStr) {
+            if (!fechaStr) return "";
+            const partes = fechaStr.split('-');
+            if (partes.length === 3) {
+                return `${partes[2]} / ${partes[1]} / ${partes[0]}`;
+            }
+            return fechaStr;
+        }
+
         function recalcular() {
             const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
@@ -200,11 +209,9 @@
                     oSublabelIva.textContent = "(SIN IVA)";
                 }
 
-                // Calcular el 50% para la entrega a cuenta
                 const cuentaVal = precioFinal / 2;
                 vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
 
-                // Pintar en la hoja
                 oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
                 oCuenta.textContent = vCuenta.value + " €";
             } else {
@@ -219,13 +226,13 @@
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
-            oFecha.textContent = vFecha.value;
+            oFecha.textContent = formatearFecha(vFecha.value);
             oTrabajos.textContent = vTrabajos.value;
         }
 
-        // Escuchar cambios en los campos de texto normales
         [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarVistaTextos);
+            el.addEventListener('change', actualizarVistaTextos);
         });
 
         actualizarVistaTextos();
