@@ -103,21 +103,25 @@
             </div>
 
             <!-- TRABAJOS A REALIZAR -->
-            <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 310px;">
+            <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 280px;">
                 <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
             </div>
 
-            <!-- ENTREGA A CUENTA (POSICIONADO MAS ABAJO) -->
-            <div class="absolute flex flex-col gap-1" style="top: 680px; left: 70px; width: 670px;">
-                <div class="flex items-center gap-2">
-                    <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
-                    <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 150px;" readonly>
-                </div>
-                <div class="text-[13px] font-medium" style="color: #dc2626;">Mano de obra y desplazamiento incluido</div>
+            <!-- ZONA INFERIOR BAJADA HASTA LA PARTE MARRÓN -->
+            
+            <!-- 1. Entrega a cuenta (arriba de esta sección) -->
+            <div class="absolute flex items-center gap-2" style="top: 725px; left: 70px; width: 670px;">
+                <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
+                <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 150px;" readonly>
             </div>
 
-            <!-- BLOQUE TOTAL: (SIN IVA) CON SU CUADRO EXACTO -->
-            <div class="absolute flex items-center gap-3" style="top: 678px; left: 470px;">
+            <!-- 2. Mano de obra y desplazamiento incluido (en rojo y en el medio) -->
+            <div class="absolute text-center text-[13px] font-medium" style="top: 755px; left: 70px; width: 670px; color: #dc2626;">
+                Mano de obra y desplazamiento incluido
+            </div>
+
+            <!-- 3. BLOQUE TOTAL: (SIN IVA) CON SU CUADRO EXACTO A LA MISMA ALTURA -->
+            <div class="absolute flex items-center gap-3" style="top: 728px; left: 470px;">
                 <div class="text-right leading-tight">
                     <div class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
                     <div class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
