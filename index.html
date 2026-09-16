@@ -65,7 +65,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
-                    <input type="text" id="val-fecha" placeholder="Ej: 16 / 09 / 2026" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <!-- Campo de fecha con las barras / ya puestas de serie para facilitar el rellenado -->
+                    <input type="text" id="val-fecha" value=" / / " class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
@@ -94,7 +95,7 @@
         <!-- VISTA PREVIA DE LA HOJA -->
         <div id="captura-area" class="presupuesto-hoja text-slate-800">
             
-            <!-- DATOS CLIENTE: Altura y separación ajustadas para evitar cortes en el nombre y subir la fecha -->
+            <!-- DATOS CLIENTE -->
             <div class="absolute flex flex-col justify-between" style="top: 56px; left: 545px; width: 235px; height: 108px;">
                 <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
                 <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 25px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
@@ -134,12 +135,10 @@
 
     <!-- Script de sincronización, saltos de viñeta y descarga -->
     <script>
-        const vFecha = document.getElementById('val-fecha');
-        // Quitamos la fecha automática de serie para que empiece vacío como el resto de campos
-
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
         const vTelefono = document.getElementById('val-telefono');
+        const vFecha = document.getElementById('val-fecha');
         const vCuenta = document.getElementById('val-cuenta');
         const vTotal = document.getElementById('val-total');
         const vTrabajos = document.getElementById('val-trabajos');
