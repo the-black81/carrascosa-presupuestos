@@ -24,7 +24,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        /* Inputs transparentes */
+        /* Inputs del panel de control */
         .input-limpio {
             background: transparent;
             border: none;
@@ -94,12 +94,12 @@
         <!-- VISTA PREVIA DE LA HOJA -->
         <div id="captura-area" class="presupuesto-hoja text-slate-800">
             
-            <!-- DATOS CLIENTE -->
-            <div class="absolute" style="top: 61px; left: 545px; width: 235px;">
-                <div style="height: 24px;"><input type="text" id="out-nombre" class="input-limpio font-medium" readonly></div>
-                <div style="height: 24px;"><input type="text" id="out-direccion" class="input-limpio font-medium" readonly></div>
-                <div style="height: 24px;"><input type="text" id="out-telefono" class="input-limpio font-medium" readonly></div>
-                <div style="height: 26px; margin-top: 5px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
+            <!-- DATOS CLIENTE (Cambiados a texturas fijas estables para que no se corten al exportar) -->
+            <div class="absolute" style="top: 59px; left: 545px; width: 235px;">
+                <div id="out-nombre" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-direccion" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-telefono" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-fecha" class="font-medium text-[14px]" style="height: 26px; line-height: 26px; margin-top: 6px; white-space: nowrap;"></div>
             </div>
 
             <!-- TRABAJOS A REALIZAR -->
@@ -110,20 +110,22 @@
             <!-- ZONA INFERIOR -->
             <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
                 <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
-                <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 150px;" readonly>
+                <div id="out-cuenta" class="font-bold text-[14px]" style="color: #1e3a8a; width: 150px; line-height: normal;"></div>
             </div>
 
             <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
                 Mano de obra y desplazamiento incluido
             </div>
 
+            <!-- BLOQUE TOTAL: Subido ligeramente el número para que encaje perfecto dentro del recuadro -->
             <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
                 <div class="text-right leading-tight">
                     <div class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
                     <div class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
                 </div>
-                <div class="bg-white border border-slate-400 rounded px-2 flex items-center" style="width: 175px; height: 38px;">
-                    <input type="text" id="out-total" class="input-limpio font-bold text-center text-slate-900" style="font-size: 16px;" readonly>
+                <!-- Cuadrado blanco con borde para el importe -->
+                <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
+                    <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
                 </div>
             </div>
 
@@ -164,7 +166,6 @@
                 e.preventDefault();
                 const start = this.selectionStart;
                 const end = this.selectionEnd;
-                // Inserta un salto de línea seguido del punto y un espacio
                 this.value = this.value.substring(0, start) + "\n• " + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 3;
                 actualizarVista();
@@ -172,12 +173,12 @@
         });
 
         function actualizarVista() {
-            oNombre.value = vNombre.value;
-            oDireccion.value = vDireccion.value;
-            oTelefono.value = vTelefono.value;
-            oFecha.value = vFecha.value;
-            oCuenta.value = vCuenta.value;
-            oTotal.value = vTotal.value;
+            oNombre.textContent = vNombre.value;
+            oDireccion.textContent = vDireccion.value;
+            oTelefono.textContent = vTelefono.value;
+            oFecha.textContent = vFecha.value;
+            oCuenta.textContent = vCuenta.value;
+            oTotal.textContent = vTotal.value;
             oTrabajos.textContent = vTrabajos.value;
         }
 
