@@ -53,15 +53,15 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
-                    <input type="text" id="val-nombre" placeholder="Ej: Alejando" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-nombre" placeholder="Ej: EVA" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
-                    <input type="text" id="val-telefono" placeholder="Ej: 622 00 00 00" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-telefono" placeholder="Ej: 635 42 99 38" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Dirección</label>
-                    <input type="text" id="val-direccion" placeholder="Ej: C/ los paisajes, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
+                    <input type="text" id="val-direccion" placeholder="Ej: C/ República Argentina 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
@@ -94,12 +94,12 @@
         <!-- VISTA PREVIA DE LA HOJA -->
         <div id="captura-area" class="presupuesto-hoja text-slate-800">
             
-            <!-- DATOS CLIENTE -->
-            <div class="absolute" style="top: 58px; left: 595px; width: 185px;">
+            <!-- DATOS CLIENTE (Movido más a la izquierda para acercarlo a los dos puntos y ajustado en altura) -->
+            <div class="absolute" style="top: 61px; left: 545px; width: 235px;">
                 <div style="height: 24px;"><input type="text" id="out-nombre" class="input-limpio font-medium" readonly></div>
                 <div style="height: 24px;"><input type="text" id="out-direccion" class="input-limpio font-medium" readonly></div>
                 <div style="height: 24px;"><input type="text" id="out-telefono" class="input-limpio font-medium" readonly></div>
-                <div style="height: 26px; padding-top: 2px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
+                <div style="height: 26px; padding-top: 1px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
             </div>
 
             <!-- TRABAJOS A REALIZAR -->
@@ -115,7 +115,7 @@
                 <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 150px;" readonly>
             </div>
 
-            <!-- 2. Mano de obra y desplazamiento incluido (bajado a la mitad exacta hacia la zona marrón) -->
+            <!-- 2. Mano de obra y desplazamiento incluido -->
             <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
                 Mano de obra y desplazamiento incluido
             </div>
