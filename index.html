@@ -59,8 +59,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
-                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-slate-50" readonly>
-                    <p class="text-xs text-slate-400 mt-1">Se calcula solo de forma automática.</p>
+                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-white border-blue-300">
+                    <p class="text-xs text-slate-400 mt-1">Puedes escribir aquí o se calcula solo.</p>
                 </div>
                 
                 <!-- SECCIÓN DE PRECIO E IVA -->
@@ -139,7 +139,7 @@
 
     </div>
 
-    <!-- Script de control y eventos corregidos -->
+    <!-- Script con control bidireccional -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -159,6 +159,8 @@
         const oTotal = document.getElementById('out-total');
         const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
+
+        let origenModificacion = 'total'; // Para saber qué campo editó el usuario por último
 
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
@@ -191,45 +193,71 @@
             return fechaStr;
         }
 
-        // Función central para calcular precios y actualizar la vista
+        vTotal.addEventListener('input', () => { origenModificacion = 'total'; actualizarTodo(); });
+        vCuenta.addEventListener('input', () => { origenModificacion = 'cuenta'; actualizarTodo(); });
+
         function actualizarTodo() {
-            // 1. Textos básicos
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
             oFecha.textContent = formatearFecha(vFecha.value);
             oTrabajos.textContent = vTrabajos.value;
 
-            // 2. Cálculos de precios e IVA
-            const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
 
-            if (!isNaN(baseVal)) {
-                let precioFinal = baseVal;
-                if (modo === 'con') {
-                    precioFinal = baseVal * 1.21;
-                    infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
-                    oSublabelIva.textContent = "(CON IVA 21%)";
-                } else {
-                    infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
-                    oSublabelIva.textContent = "(SIN IVA)";
-                }
-
-                const cuentaVal = precioFinal / 2;
-                vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
-
-                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-                oCuenta.textContent = vCuenta.value + " €";
+            if (modo === 'con') {
+                oSublabelIva.textContent = "(CON IVA 21%)";
             } else {
-                vCuenta.value = '';
-                oTotal.textContent = '';
-                oCuenta.textContent = '';
-                infoIvaDetalle.textContent = "Introduce una cantidad en el importe base.";
+                oSublabelIva.textContent = "(SIN IVA)";
+            }
+
+            if (origenModificacion === 'total') {
+                const baseVal = parseFloat(vTotal.value);
+                if (!isNaN(baseVal)) {
+                    let precioFinal = baseVal;
+                    if (modo === 'con') {
+                        precioFinal = baseVal * 1.21;
+                        infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
+                    } else {
+                        infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
+                    }
+
+                    const cuentaVal = precioFinal / 2;
+                    vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
+
+                    oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+                    oCuenta.textContent = vCuenta.value + " €";
+                } else {
+                    vCuenta.value = '';
+                    oTotal.textContent = '';
+                    oCuenta.textContent = '';
+                    infoIvaDetalle.textContent = "Introduce una cantidad en el importe base.";
+                }
+            } else {
+                // Si el usuario decidió escribir directamente en "Entrega a cuenta"
+                const cuentaVal = parseFloat(vCuenta.value);
+                if (!isNaN(cuentaVal)) {
+                    let precioFinal = cuentaVal * 2;
+                    let baseVal = precioFinal;
+                    if (modo === 'con') {
+                        baseVal = precioFinal / 1.21;
+                        infoIvaDetalle.textContent = `Cuenta manual: ${cuentaVal} € (Total calculado con IVA).`;
+                    } else {
+                        infoIvaDetalle.textContent = `Cuenta manual: ${cuentaVal} € (Total base calculado).`;
+                    }
+
+                    vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
+                    oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+                    oCuenta.textContent = cuentaVal.toFixed(2).replace(/\.00$/, '') + " €";
+                } else {
+                    vTotal.value = '';
+                    oTotal.textContent = '';
+                    oCuenta.textContent = '';
+                }
             }
         }
 
-        // Escuchar eventos de escritura y cambios en todos los campos
-        [vNombre, vDireccion, vTelefono, vFecha, vTotal, vTrabajos].forEach(el => {
+        [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarTodo);
             el.addEventListener('change', actualizarTodo);
         });
