@@ -79,8 +79,8 @@
 
             <div class="mb-6 border-t pt-4">
                 <div>
-                    <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (Usa viñetas •)</label>
-                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="• Suministro y colocación...&#10;• Retirada de tabiques..."></textarea>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (pulsa Enter para nueva viñeta)</label>
+                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="• Suministro y colocación..."></textarea>
                 </div>
             </div>
 
@@ -94,12 +94,12 @@
         <!-- VISTA PREVIA DE LA HOJA -->
         <div id="captura-area" class="presupuesto-hoja text-slate-800">
             
-            <!-- DATOS CLIENTE (Movido más a la izquierda para acercarlo a los dos puntos y ajustado en altura) -->
+            <!-- DATOS CLIENTE -->
             <div class="absolute" style="top: 61px; left: 545px; width: 235px;">
                 <div style="height: 24px;"><input type="text" id="out-nombre" class="input-limpio font-medium" readonly></div>
                 <div style="height: 24px;"><input type="text" id="out-direccion" class="input-limpio font-medium" readonly></div>
                 <div style="height: 24px;"><input type="text" id="out-telefono" class="input-limpio font-medium" readonly></div>
-                <div style="height: 26px; padding-top: 5px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
+                <div style="height: 26px; margin-top: 5px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
             </div>
 
             <!-- TRABAJOS A REALIZAR -->
@@ -108,25 +108,20 @@
             </div>
 
             <!-- ZONA INFERIOR -->
-            
-            <!-- 1. Entrega a cuenta -->
             <div class="absolute flex items-center gap-2" style="top: 860px; left: 70px; width: 670px;">
                 <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
                 <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 150px;" readonly>
             </div>
 
-            <!-- 2. Mano de obra y desplazamiento incluido -->
             <div class="absolute text-center text-[13px] font-medium" style="top: 920px; left: 70px; width: 670px; color: #dc2626;">
                 Mano de obra y desplazamiento incluido
             </div>
 
-            <!-- 3. BLOQUE TOTAL: (SIN IVA) CON SU CUADRO EXACTO -->
             <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
                 <div class="text-right leading-tight">
                     <div class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
                     <div class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
                 </div>
-                <!-- Cuadrado blanco con borde para el importe -->
                 <div class="bg-white border border-slate-400 rounded px-2 flex items-center" style="width: 175px; height: 38px;">
                     <input type="text" id="out-total" class="input-limpio font-bold text-center text-slate-900" style="font-size: 16px;" readonly>
                 </div>
@@ -136,16 +131,16 @@
 
     </div>
 
-    <!-- Script de sincronización y descarga -->
+    <!-- Script de sincronización, saltos de viñeta y descarga -->
     <script>
         const hoy = new Date();
         const fechaFormateada = String(hoy.getDate()).padStart(2, '0') + ' / ' + String(hoy.getMonth() + 1).padStart(2, '0') + ' / ' + hoy.getFullYear();
-        document.getElementById('val-fecha').value = fechaFormateada;
+        const vFecha = document.getElementById('val-fecha');
+        vFecha.value = fechaFormateada;
 
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
         const vTelefono = document.getElementById('val-telefono');
-        const vFecha = document.getElementById('val-fecha');
         const vCuenta = document.getElementById('val-cuenta');
         const vTotal = document.getElementById('val-total');
         const vTrabajos = document.getElementById('val-trabajos');
@@ -157,6 +152,24 @@
         const oCuenta = document.getElementById('out-cuenta');
         const oTotal = document.getElementById('out-total');
         const oTrabajos = document.getElementById('out-trabajos');
+
+        // Poner el primer punto automáticamente al cargar si está vacío
+        if (!vTrabajos.value) {
+            vTrabajos.value = "• ";
+        }
+
+        // Automatizar el punto al pulsar Enter en el textarea de trabajos
+        vTrabajos.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                // Inserta un salto de línea seguido del punto y un espacio
+                this.value = this.value.substring(0, start) + "\n• " + this.value.substring(end);
+                this.selectionStart = this.selectionEnd = start + 3;
+                actualizarVista();
+            }
+        });
 
         function actualizarVista() {
             oNombre.value = vNombre.value;
