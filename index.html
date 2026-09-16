@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Presupuestos - Carrascosa</title>
+    <!-- Tailwind CSS para el panel de control móvil -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas y jsPDF para exportar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Contenedor con la proporción exacta de un A4 / Imagen */
+        .presupuesto-hoja {
+            width: 800px;
+            height: 1131px;
+            background-image: url('plantilla limpia.jpg'); /* Carga tu imagen limpia de fondo */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Inputs transparentes que se funden perfectamente con la plantilla */
+        .input-limpio {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+            color: #1f2937;
+        }
+        .input-limpio:focus {
+            background: rgba(59, 130, 246, 0.05);
+            border-bottom: 1px dashed #3b82f6;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #captura-area, #captura-area * { visibility: visible; }
+            #captura-area { position: absolute; left: 0; top: 0; width: 100%; box-shadow: none; }
+            .no-print { display: none; }
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen py-8 px-4">
+
+    <div class="max-w-5xl mx-auto flex flex-col items-center">
+        
+        <!-- PANEL DE CONTROL (No sale en el PDF/JPG) -->
+        <div class="no-print w-full bg-white p-6 rounded-xl shadow-md mb-8">
+            <h1 class="text-xl font-bold text-slate-800 mb-4">🛠️ Rellenar Presupuesto - Carrascosa</h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Nombre del Cliente</label>
+                    <input type="text" id="val-nombre" placeholder="Ej: EVA" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Teléfono</label>
+                    <input type="text" id="val-telefono" placeholder="Ej: 635 42 99 38" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Dirección</label>
+                    <input type="text" id="val-direccion" placeholder="Ej: C/ República Argentina 70, 4º D" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
+                    <input type="text" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 border-t pt-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (Anticipo 50%)</label>
+                    <input type="text" id="val-anticipo" placeholder="Ej: 5.420 €" class="w-full border rounded-lg px-3 py-2 text-sm font-bold text-blue-600">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">TOTAL (SIN IVA)</label>
+                    <input type="text" id="val-total" placeholder="Ej: 10.840 €" class="w-full border rounded-lg px-3 py-2 text-sm font-bold text-emerald-600">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (Usa viñetas •)</label>
+                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="• Suministro y colocación...&#10;• Retirada de tabiques..."></textarea>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="flex flex-wrap gap-4 justify-end">
+                <button onclick="descargarJPG()" class="bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-slate-700 transition">📸 Descargar JPG</button>
+                <button onclick="descargarPDF()" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-500 transition">📄 Descargar PDF</button>
+            </div>
+        </div>
+
+        <!-- VISTA PREVIA DE LA HOJA -->
+        <div id="captura-area" class="presupuesto-hoja text-slate-800">
+            
+            <!-- DATOS CLIENTE -->
+            <div class="absolute" style="top: 60px; left: 520px; width: 250px;">
+                <div class="mb-1"><input type="text" id="out-nombre" class="input-limpio font-medium" readonly></div>
+                <div class="mb-1"><input type="text" id="out-direccion" class="input-limpio font-medium" readonly></div>
+                <div class="mb-1"><input type="text" id="out-telefono" class="input-limpio font-medium" readonly></div>
+                <div><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
+            </div>
+
+            <!-- TRABAJOS A REALIZAR -->
+            <div class="absolute" style="top: 275px; left: 65px; width: 670px; height: 380px;">
+                <pre id="out-trabajos" class="w-full h-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit;"></pre>
+            </div>
+
+            <!-- ANTICIPO / ENTREGA A CUENTA -->
+            <div class="absolute" style="top: 700px; left: 330px; width: 250px;">
+                <input type="text" id="out-anticipo" class="input-limpio font-bold text-slate-900" readonly>
+            </div>
+
+            <!-- TOTAL (SIN IVA) -->
+            <div class="absolute" style="top: 800px; left: 560px; width: 200px;">
+                <input type="text" id="out-total" class="input-limpio font-bold text-xl text-slate-900" readonly>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Script de sincronización y descarga -->
+    <script>
+        const hoy = new Date();
+        const fechaFormateada = String(hoy.getDate()).padStart(2, '0') + ' / ' + String(hoy.getMonth() + 1).padStart(2, '0') + ' / ' + hoy.getFullYear();
+        document.getElementById('val-fecha').value = fechaFormateada;
+
+        const vNombre = document.getElementById('val-nombre');
+        const vDireccion = document.getElementById('val-direccion');
+        const vTelefono = document.getElementById('val-telefono');
+        const vFecha = document.getElementById('val-fecha');
+        const vAnticipo = document.getElementById('val-anticipo');
+        const vTotal = document.getElementById('val-total');
+        const vTrabajos = document.getElementById('val-trabajos');
+
+        const oNombre = document.getElementById('out-nombre');
+        const oDireccion = document.getElementById('out-direccion');
+        const oTelefono = document.getElementById('out-telefono');
+        const oFecha = document.getElementById('out-fecha');
+        const oAnticipo = document.getElementById('out-anticipo');
+        const oTotal = document.getElementById('out-total');
+        const oTrabajos = document.getElementById('out-trabajos');
+
+        function actualizarVista() {
+            oNombre.value = vNombre.value;
+            oDireccion.value = vDireccion.value;
+            oTelefono.value = vTelefono.value;
+            oFecha.value = vFecha.value;
+            oAnticipo.value = vAnticipo.value;
+            oTotal.value = vTotal.value;
+            oTrabajos.textContent = vTrabajos.value;
+        }
+
+        [vNombre, vDireccion, vTelefono, vFecha, vAnticipo, vTotal, vTrabajos].forEach(el => {
+            el.addEventListener('input', actualizarVista);
+        });
+
+        actualizarVista();
+
+        function descargarJPG() {
+            const elemento = document.getElementById('captura-area');
+            html2canvas(elemento, { scale: 2 }).then(canvas => {
+                const enlace = document.createElement('a');
+                enlace.download = `Presupuesto_${vNombre.value || 'cliente'}.jpg`;
+                enlace.href = canvas.toDataURL('image/jpeg', 0.95);
+                enlace.click();
+            });
+        }
+
+        function descargarPDF() {
+            const { jsPDF } = window.jspdf;
+            const elemento = document.getElementById('captura-area');
+            html2canvas(elemento, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Presupuesto_${vNombre.value || 'cliente'}.pdf`);
+            });
+        }
+    </script>
+</body>
+</html>
