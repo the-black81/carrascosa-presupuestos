@@ -155,7 +155,7 @@
 
     </div>
 
-    <!-- Script de cálculo -->
+    <!-- Script con formato de miles español -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -207,6 +207,15 @@
             return fechaStr;
         }
 
+        // Función para formatear números al estilo español (con puntos de miles y comas para decimales si los hubiera)
+        function formatearMoneda(num) {
+            if (isNaN(num)) return "";
+            return new Intl.NumberFormat('es-ES', { 
+                minimumFractionDigits: 0, 
+                maximumFractionDigits: 2 
+            }).format(num);
+        }
+
         function calcularDesdeTotal() {
             const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
@@ -216,7 +225,7 @@
                 if (modo === 'con') {
                     precioFinal = baseVal * 1.21;
                     oSublabelIva.textContent = "(CON IVA 21%)";
-                    infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
+                    infoIvaDetalle.textContent = `Base: ${formatearMoneda(baseVal)} € + 21% IVA = ${formatearMoneda(precioFinal)} € final.`;
                 } else {
                     oSublabelIva.textContent = "(SIN IVA)";
                     infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
@@ -225,8 +234,9 @@
                 const cuentaVal = precioFinal / 2;
                 vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
 
-                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-                oCuenta.textContent = vCuenta.value + " €";
+                // Pintamos ya con formato de miles oficial en la hoja impresa/capturada
+                oTotal.textContent = formatearMoneda(precioFinal) + " €";
+                oCuenta.textContent = formatearMoneda(cuentaVal) + " €";
             } else {
                 vCuenta.value = '';
                 oTotal.textContent = '';
@@ -244,8 +254,8 @@
                     baseVal = precioFinal / 1.21;
                 }
                 vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
-                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-                oCuenta.textContent = cuentaVal.toFixed(2).replace(/\.00$/, '') + " €";
+                oTotal.textContent = formatearMoneda(precioFinal) + " €";
+                oCuenta.textContent = formatearMoneda(cuentaVal) + " €";
             }
         });
 
