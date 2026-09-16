@@ -13,11 +13,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor con la proporción exacta A4 usando tu archivo */
+        /* Contenedor A4 apuntando exactamente a tu plantilla */
         .presupuesto-hoja {
             width: 800px;
             height: 1131px;
-            background-image: url("plantilla mas limpia.jpg");
+            background-image: url('plantilla mas limpia.jpg');
             background-size: cover;
             background-position: center;
             position: relative;
@@ -104,10 +104,8 @@
 
             <!-- TRABAJOS A REALIZAR + TEXTOS INFERIORES -->
             <div class="absolute flex flex-col justify-between" style="top: 335px; left: 70px; width: 670px; height: 460px;">
-                <!-- Texto principal de trabajos -->
                 <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
                 
-                <!-- Bloque inferior con la línea de entrega a cuenta interactiva -->
                 <div class="flex flex-col gap-2 pb-2">
                     <div class="flex items-center gap-2">
                         <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
