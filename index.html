@@ -59,8 +59,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
-                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-white border-blue-300">
-                    <p class="text-xs text-slate-400 mt-1">Puedes escribir aquí o se calcula solo.</p>
+                    <input type="number" id="val-cuenta" placeholder="Ej: 2500" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-white border-blue-300">
+                    <p class="text-xs text-slate-400 mt-1">Se autocalcula o puedes escribirlo a mano.</p>
                 </div>
                 
                 <!-- SECCIÓN DE PRECIO E IVA -->
@@ -139,7 +139,7 @@
 
     </div>
 
-    <!-- Script con control bidireccional -->
+    <!-- Script simplificado y directo -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -160,8 +160,6 @@
         const oSublabelIva = document.getElementById('out-sublabel-iva');
         const oTrabajos = document.getElementById('out-trabajos');
 
-        let origenModificacion = 'total'; // Para saber qué campo editó el usuario por último
-
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
         }
@@ -173,7 +171,7 @@
                 const end = this.selectionEnd;
                 this.value = this.value.substring(0, start) + "\n• " + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 3;
-                actualizarTodo();
+                actualizarVista();
             }
         });
 
@@ -193,80 +191,72 @@
             return fechaStr;
         }
 
-        vTotal.addEventListener('input', () => { origenModificacion = 'total'; actualizarTodo(); });
-        vCuenta.addEventListener('input', () => { origenModificacion = 'cuenta'; actualizarTodo(); });
+        // Lógica principal de cálculo limpia y directa
+        function calcularDesdeTotal() {
+            const baseVal = parseFloat(vTotal.value);
+            const modo = obtenerModoIva();
 
-        function actualizarTodo() {
+            if (!isNaN(baseVal)) {
+                let precioFinal = baseVal;
+                if (modo === 'con') {
+                    precioFinal = baseVal * 1.21;
+                    oSublabelIva.textContent = "(CON IVA 21%)";
+                    infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
+                } else {
+                    oSublabelIva.textContent = "(SIN IVA)";
+                    infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
+                }
+
+                // Autocalcular el 50% en la entrega a cuenta solo si el usuario no lo ha escrito a mano de forma independiente
+                const cuentaVal = precioFinal / 2;
+                vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
+
+                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+                oCuenta.textContent = vCuenta.value + " €";
+            } else {
+                vCuenta.value = '';
+                oTotal.textContent = '';
+                oCuenta.textContent = '';
+            }
+        }
+
+        // Si escriben directamente en la cuenta a mano
+        vCuenta.addEventListener('input', function() {
+            const cuentaVal = parseFloat(vCuenta.value);
+            const modo = obtenerModoIva();
+            if (!isNaN(cuentaVal)) {
+                let precioFinal = cuentaVal * 2;
+                let baseVal = precioFinal;
+                if (modo === 'con') {
+                    baseVal = precioFinal / 1.21;
+                }
+                vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
+                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+                oCuenta.textContent = cuentaVal.toFixed(2).replace(/\.00$/, '') + " €";
+            }
+        });
+
+        vTotal.addEventListener('input', calcularDesdeTotal);
+
+        radiosIva.forEach(radio => {
+            radio.addEventListener('change', calcularDesdeTotal);
+        });
+
+        function actualizarVista() {
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
             oFecha.textContent = formatearFecha(vFecha.value);
             oTrabajos.textContent = vTrabajos.value;
-
-            const modo = obtenerModoIva();
-
-            if (modo === 'con') {
-                oSublabelIva.textContent = "(CON IVA 21%)";
-            } else {
-                oSublabelIva.textContent = "(SIN IVA)";
-            }
-
-            if (origenModificacion === 'total') {
-                const baseVal = parseFloat(vTotal.value);
-                if (!isNaN(baseVal)) {
-                    let precioFinal = baseVal;
-                    if (modo === 'con') {
-                        precioFinal = baseVal * 1.21;
-                        infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
-                    } else {
-                        infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
-                    }
-
-                    const cuentaVal = precioFinal / 2;
-                    vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
-
-                    oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-                    oCuenta.textContent = vCuenta.value + " €";
-                } else {
-                    vCuenta.value = '';
-                    oTotal.textContent = '';
-                    oCuenta.textContent = '';
-                    infoIvaDetalle.textContent = "Introduce una cantidad en el importe base.";
-                }
-            } else {
-                // Si el usuario decidió escribir directamente en "Entrega a cuenta"
-                const cuentaVal = parseFloat(vCuenta.value);
-                if (!isNaN(cuentaVal)) {
-                    let precioFinal = cuentaVal * 2;
-                    let baseVal = precioFinal;
-                    if (modo === 'con') {
-                        baseVal = precioFinal / 1.21;
-                        infoIvaDetalle.textContent = `Cuenta manual: ${cuentaVal} € (Total calculado con IVA).`;
-                    } else {
-                        infoIvaDetalle.textContent = `Cuenta manual: ${cuentaVal} € (Total base calculado).`;
-                    }
-
-                    vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
-                    oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-                    oCuenta.textContent = cuentaVal.toFixed(2).replace(/\.00$/, '') + " €";
-                } else {
-                    vTotal.value = '';
-                    oTotal.textContent = '';
-                    oCuenta.textContent = '';
-                }
-            }
+            calcularDesdeTotal();
         }
 
         [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
-            el.addEventListener('input', actualizarTodo);
-            el.addEventListener('change', actualizarTodo);
+            el.addEventListener('input', actualizarVista);
+            el.addEventListener('change', actualizarVista);
         });
 
-        radiosIva.forEach(radio => {
-            radio.addEventListener('change', actualizarTodo);
-        });
-
-        actualizarTodo();
+        actualizarVista();
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
