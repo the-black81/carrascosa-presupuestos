@@ -94,12 +94,12 @@
         <!-- VISTA PREVIA DE LA HOJA -->
         <div id="captura-area" class="presupuesto-hoja text-slate-800">
             
-            <!-- DATOS CLIENTE (Cambiados a texturas fijas estables para que no se corten al exportar) -->
-            <div class="absolute" style="top: 59px; left: 545px; width: 235px;">
-                <div id="out-nombre" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-direccion" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-telefono" class="font-medium text-[14px]" style="height: 24px; line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
-                <div id="out-fecha" class="font-medium text-[14px]" style="height: 26px; line-height: 26px; margin-top: 6px; white-space: nowrap;"></div>
+            <!-- DATOS CLIENTE: Bloque unificado con posicionamiento exacto por línea sin saltos raros -->
+            <div class="absolute flex flex-col justify-between" style="top: 58px; left: 545px; width: 235px; height: 104px;">
+                <div id="out-nombre" class="font-medium text-[14px]" style="line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-direccion" class="font-medium text-[14px]" style="line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-telefono" class="font-medium text-[14px]" style="line-height: 24px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></div>
+                <div id="out-fecha" class="font-medium text-[14px]" style="line-height: 24px; white-space: nowrap;"></div>
             </div>
 
             <!-- TRABAJOS A REALIZAR -->
@@ -117,13 +117,12 @@
                 Mano de obra y desplazamiento incluido
             </div>
 
-            <!-- BLOQUE TOTAL: Subido ligeramente el número para que encaje perfecto dentro del recuadro -->
+            <!-- BLOQUE TOTAL -->
             <div class="absolute flex items-center gap-3" style="top: 863px; left: 470px;">
                 <div class="text-right leading-tight">
                     <div class="font-bold tracking-wider text-[15px]" style="color: #2b2b2b;">TOTAL:</div>
                     <div class="font-semibold text-[11px]" style="color: #1e3a8a;">(SIN IVA)</div>
                 </div>
-                <!-- Cuadrado blanco con borde para el importe -->
                 <div class="bg-white border border-slate-400 rounded px-2 flex items-center justify-center" style="width: 175px; height: 38px;">
                     <div id="out-total" class="font-bold text-center text-slate-900" style="font-size: 16px; line-height: 1; padding-bottom: 2px;"></div>
                 </div>
