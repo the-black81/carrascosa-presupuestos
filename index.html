@@ -13,11 +13,11 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor con la proporción exacta A4 */
+        /* Contenedor con la proporción exacta A4 usando tu archivo */
         .presupuesto-hoja {
             width: 800px;
             height: 1131px;
-            background-image: url('plantilla.jpg');
+            background-image: url("plantilla mas limpia.jpg");
             background-size: cover;
             background-position: center;
             position: relative;
@@ -68,8 +68,12 @@
                     <input type="text" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
                 <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
+                    <input type="text" id="val-cuenta" placeholder="Ej: 625 €" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900">
+                </div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Importe Total (€)</label>
-                    <input type="text" id="val-total" placeholder="Ej: 1.250 €" class="w-full border rounded-lg px-3 py-2 text-sm font-bold text-slate-800">
+                    <input type="text" id="val-total" placeholder="Ej: 1.250 €" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-slate-50">
                 </div>
             </div>
 
@@ -98,14 +102,17 @@
                 <div style="height: 26px; padding-top: 2px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
             </div>
 
-            <!-- TRABAJOS A REALIZAR + TEXTOS INFERIORES UNIFICADOS -->
+            <!-- TRABAJOS A REALIZAR + TEXTOS INFERIORES -->
             <div class="absolute flex flex-col justify-between" style="top: 335px; left: 70px; width: 670px; height: 460px;">
-                <!-- Texto principal de trabajos (crece hacia abajo) -->
+                <!-- Texto principal de trabajos -->
                 <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
                 
-                <!-- Bloque fijo inferior alineado al final del espacio -->
+                <!-- Bloque inferior con la línea de entrega a cuenta interactiva -->
                 <div class="flex flex-col gap-2 pb-2">
-                    <div class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</span>
+                        <input type="text" id="out-cuenta" class="input-limpio font-bold" style="color: #1e3a8a; width: 120px;" readonly>
+                    </div>
                     <div class="text-[13px] font-medium text-center" style="color: #dc2626;">Mano de obra y desplazamiento incluido</div>
                 </div>
             </div>
@@ -129,6 +136,7 @@
         const vDireccion = document.getElementById('val-direccion');
         const vTelefono = document.getElementById('val-telefono');
         const vFecha = document.getElementById('val-fecha');
+        const vCuenta = document.getElementById('val-cuenta');
         const vTotal = document.getElementById('val-total');
         const vTrabajos = document.getElementById('val-trabajos');
 
@@ -136,6 +144,7 @@
         const oDireccion = document.getElementById('out-direccion');
         const oTelefono = document.getElementById('out-telefono');
         const oFecha = document.getElementById('out-fecha');
+        const oCuenta = document.getElementById('out-cuenta');
         const oTotal = document.getElementById('out-total');
         const oTrabajos = document.getElementById('out-trabajos');
 
@@ -144,11 +153,12 @@
             oDireccion.value = vDireccion.value;
             oTelefono.value = vTelefono.value;
             oFecha.value = vFecha.value;
+            oCuenta.value = vCuenta.value;
             oTotal.value = vTotal.value;
             oTrabajos.textContent = vTrabajos.value;
         }
 
-        [vNombre, vDireccion, vTelefono, vFecha, vTotal, vTrabajos].forEach(el => {
+        [vNombre, vDireccion, vTelefono, vFecha, vCuenta, vTotal, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarVista);
         });
 
