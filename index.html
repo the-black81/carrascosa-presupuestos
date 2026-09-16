@@ -59,7 +59,8 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
-                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900">
+                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900 bg-slate-50" readonly>
+                    <p class="text-xs text-slate-400 mt-1">Se calcula solo de forma automática.</p>
                 </div>
                 
                 <!-- SECCIÓN DE PRECIO E IVA -->
@@ -71,14 +72,14 @@
                         <div class="flex items-center gap-4 bg-white px-3 py-1.5 rounded-lg border border-slate-300 shadow-sm">
                             <span class="text-xs font-bold text-slate-600">Cálculo:</span>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                                <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600"> Sin IVA
+                                <input type="radio" name="tipo-iva" value="sin" checked class="text-blue-600" onchange="recalcular()"> Sin IVA
                             </label>
                             <label class="flex items-center gap-1.5 text-xs font-medium cursor-pointer">
-                                <input type="radio" name="tipo-iva" value="con" class="text-blue-600"> Con IVA (+21%)
+                                <input type="radio" name="tipo-iva" value="con" class="text-blue-600" onchange="recalcular()"> Con IVA (+21%)
                             </label>
                         </div>
                     </div>
-                    <input type="number" id="val-total" placeholder="Ej: 1250" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white">
+                    <input type="number" id="val-total" placeholder="Ej: 5000" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-white" oninput="recalcular()">
                     <p id="info-iva-detalle" class="text-xs text-slate-500 mt-1.5">Introduce la cantidad y se calculará automáticamente el total y la cuenta.</p>
                 </div>
             </div>
@@ -138,7 +139,7 @@
 
     </div>
 
-    <!-- Script de sincronización y cálculo matemático corregido -->
+    <!-- Script de cálculo optimizado -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -170,7 +171,7 @@
                 const end = this.selectionEnd;
                 this.value = this.value.substring(0, start) + "\n• " + this.value.substring(end);
                 this.selectionStart = this.selectionEnd = start + 3;
-                actualizarVista();
+                actualizarVistaTextos();
             }
         });
 
@@ -181,85 +182,53 @@
             return 'sin';
         }
 
-        // Cada vez que se escribe en el Total o se cambia el IVA, se recalcula TODO automáticamente
-        function calcularDesdeTotal() {
+        // Función principal que recalcula todo matemáticamente
+        function recalcular() {
             const baseVal = parseFloat(vTotal.value);
             const modo = obtenerModoIva();
-            
+
+            let precioFinal = 0;
+
             if (!isNaN(baseVal)) {
-                let precioFinal = baseVal;
                 if (modo === 'con') {
-                    precioFinal = baseVal * 1.21; // 5000 * 1.21 = 6050
-                }
-                // La cuenta es exactamente el 50% del precio final definitivo
-                vCuenta.value = (precioFinal / 2).toFixed(2).replace(/\.00$/, '');
-            } else {
-                vCuenta.value = '';
-            }
-            actualizarVista();
-        }
-
-        // Si el usuario prefiere escribir primero la cuenta a mano
-        vCuenta.addEventListener('input', function() {
-            const cuentaVal = parseFloat(vCuenta.value);
-            const modo = obtenerModoIva();
-            if (!isNaN(cuentaVal)) {
-                let precioFinal = cuentaVal * 2;
-                let baseVal = precioFinal;
-                if (modo === 'con') {
-                    baseVal = precioFinal / 1.21;
-                }
-                vTotal.value = baseVal.toFixed(2).replace(/\.00$/, '');
-            } else {
-                vTotal.value = '';
-            }
-            actualizarVista();
-        });
-
-        vTotal.addEventListener('input', calcularDesdeTotal);
-
-        radiosIva.forEach(radio => {
-            radio.addEventListener('change', function() {
-                const modo = obtenerModoIva();
-                if (modo === 'con') {
-                    infoIvaDetalle.textContent = "Se aplica un 21% de IVA (Ej: 5000 + 21% = 6050 € | Cuenta: 3025 €).";
+                    precioFinal = baseVal * 1.21;
+                    infoIvaDetalle.textContent = `Base: ${baseVal} € + 21% IVA = ${precioFinal.toFixed(2)} € final.`;
                     oSublabelIva.textContent = "(CON IVA 21%)";
                 } else {
+                    precioFinal = baseVal;
                     infoIvaDetalle.textContent = "Cantidad neta sin impuestos añadidos.";
                     oSublabelIva.textContent = "(SIN IVA)";
                 }
-                calcularDesdeTotal(); // Recalcula al cambiar de opción de IVA
-            });
-        });
 
-        function actualizarVista() {
+                // Calcular el 50% para la entrega a cuenta
+                const cuentaVal = precioFinal / 2;
+                vCuenta.value = cuentaVal.toFixed(2).replace(/\.00$/, '');
+
+                // Pintar en la hoja
+                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
+                oCuenta.textContent = vCuenta.value + " €";
+            } else {
+                vCuenta.value = '';
+                oTotal.textContent = '';
+                oCuenta.textContent = '';
+                infoIvaDetalle.textContent = "Introduce una cantidad en el importe base.";
+            }
+        }
+
+        function actualizarVistaTextos() {
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
             oFecha.textContent = vFecha.value;
-            
-            const baseVal = parseFloat(vTotal.value);
-            const modo = obtenerModoIva();
-
-            if (!isNaN(baseVal)) {
-                let precioFinal = baseVal;
-                if (modo === 'con') {
-                    precioFinal = baseVal * 1.21;
-                }
-                oTotal.textContent = precioFinal.toFixed(2).replace(/\.00$/, '') + " €";
-            } else {
-                oTotal.textContent = "";
-            }
-
-            oCuenta.textContent = vCuenta.value ? vCuenta.value + " €" : "";
             oTrabajos.textContent = vTrabajos.value;
         }
 
+        // Escuchar cambios en los campos de texto normales
         [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
-            el.addEventListener('input', actualizarVista);
+            el.addEventListener('input', actualizarVistaTextos);
         });
 
-        actualizarVista();
+        actualizarVistaTextos();
 
         function descargarJPG() {
             const elemento = document.getElementById('captura-area');
