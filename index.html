@@ -24,16 +24,6 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        /* Inputs del panel de control */
-        .input-limpio {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            font-size: 14px;
-            color: #1f2937;
-        }
-
         @media print {
             body * { visibility: hidden; }
             #captura-area, #captura-area * { visibility: visible; }
@@ -65,16 +55,15 @@
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha (Selecciona en el calendario)</label>
-                    <!-- Campo de fecha interactivo con calendario nativo -->
                     <input type="date" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm bg-white cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Entrega a cuenta (50%) (€)</label>
-                    <input type="text" id="val-cuenta" placeholder="Ej: 625 €" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900">
+                    <input type="number" id="val-cuenta" placeholder="Ej: 625" class="w-full border rounded-lg px-3 py-2 text-sm font-semibold text-blue-900">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Importe Total (SIN IVA) (€)</label>
-                    <input type="text" id="val-total" placeholder="Ej: 1.250 €" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-slate-50">
+                    <input type="number" id="val-total" placeholder="Ej: 1250" class="w-full border rounded-lg px-3 py-2 text-base font-bold text-slate-900 bg-slate-50">
                 </div>
             </div>
 
@@ -133,7 +122,7 @@
 
     </div>
 
-    <!-- Script de sincronización, formato de fecha y descarga -->
+    <!-- Script de sincronización, cálculo inteligente y descargas -->
     <script>
         const vNombre = document.getElementById('val-nombre');
         const vDireccion = document.getElementById('val-direccion');
@@ -151,12 +140,10 @@
         const oTotal = document.getElementById('out-total');
         const oTrabajos = document.getElementById('out-trabajos');
 
-        // Poner el primer punto automáticamente al cargar si está vacío
         if (!vTrabajos.value) {
             vTrabajos.value = "• ";
         }
 
-        // Automatizar el punto al pulsar Enter en el textarea de trabajos
         vTrabajos.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -168,7 +155,6 @@
             }
         });
 
-        // Función para transformar el formato de fecha de la máquina (YYYY-MM-DD) al formato español (DD / MM / YYYY)
         function formatearFechaEspanol(fechaStr) {
             if (!fechaStr) return "";
             const partes = fechaStr.split('-');
@@ -178,19 +164,51 @@
             return fechaStr;
         }
 
+        // Lógica de cálculo automático cruzado
+        let calculando = false;
+
+        vTotal.addEventListener('input', function() {
+            if (calculando) return;
+            calculando = true;
+            const totalVal = parseFloat(vTotal.value);
+            if (!isNaN(totalVal)) {
+                vCuenta.value = (totalVal / 2).toFixed(2).replace(/\.00$/, '');
+            } else {
+                vCuenta.value = '';
+            }
+            calculando = false;
+            actualizarVista();
+        });
+
+        vCuenta.addEventListener('input', function() {
+            if (calculando) return;
+            calculando = true;
+            const cuentaVal = parseFloat(vCuenta.value);
+            if (!isNaN(cuentaVal)) {
+                vTotal.value = (cuentaVal * 2).toFixed(2).replace(/\.00$/, '');
+            } else {
+                vTotal.value = '';
+            }
+            calculando = false;
+            actualizarVista();
+        });
+
         function actualizarVista() {
             oNombre.textContent = vNombre.value;
             oDireccion.textContent = vDireccion.value;
             oTelefono.textContent = vTelefono.value;
             oFecha.textContent = formatearFechaEspanol(vFecha.value);
-            oCuenta.textContent = vCuenta.value;
-            oTotal.textContent = vTotal.value;
+            
+            // Añadir el símbolo de € automáticamente en la hoja si hay número
+            oCuenta.textContent = vCuenta.value ? vCuenta.value + " €" : "";
+            oTotal.textContent = vTotal.value ? vTotal.value + " €" : "";
+            
             oTrabajos.textContent = vTrabajos.value;
         }
 
-        [vNombre, vDireccion, vTelefono, vFecha, vCuenta, vTotal, vTrabajos].forEach(el => {
+        [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarVista);
-            el.addEventListener('change', actualizarVista); // Importante para el calendario
+            el.addEventListener('change', actualizarVista);
         });
 
         actualizarVista();
