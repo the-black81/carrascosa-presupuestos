@@ -13,7 +13,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Contenedor con la proporción exacta A4 usando la imagen renombrada */
+        /* Contenedor con la proporción exacta A4 */
         .presupuesto-hoja {
             width: 800px;
             height: 1131px;
@@ -24,7 +24,7 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
 
-        /* Inputs transparentes perfectamente ajustados */
+        /* Inputs transparentes */
         .input-limpio {
             background: transparent;
             border: none;
@@ -46,7 +46,7 @@
 
     <div class="max-w-5xl mx-auto flex flex-col items-center">
         
-        <!-- PANEL DE CONTROL (No sale en PDF/JPG) -->
+        <!-- PANEL DE CONTROL -->
         <div class="no-print w-full bg-white p-6 rounded-xl shadow-md mb-8">
             <h1 class="text-xl font-bold text-slate-800 mb-4">🛠️ Rellenar Presupuesto - Carrascosa</h1>
             
@@ -67,12 +67,16 @@
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Fecha</label>
                     <input type="text" id="val-fecha" class="w-full border rounded-lg px-3 py-2 text-sm">
                 </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-600 mb-1">Importe Total (€)</label>
+                    <input type="text" id="val-total" placeholder="Ej: 1.250 €" class="w-full border rounded-lg px-3 py-2 text-sm font-bold text-slate-800">
+                </div>
             </div>
 
             <div class="mb-6 border-t pt-4">
                 <div>
                     <label class="block text-sm font-semibold text-slate-600 mb-1">Trabajos a realizar (Usa viñetas •)</label>
-                    <textarea id="val-trabajos" rows="8" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="• Suministro y colocación...&#10;• Retirada de tabiques..."></textarea>
+                    <textarea id="val-trabajos" rows="6" class="w-full border rounded-lg px-3 py-2 text-sm" placeholder="• Suministro y colocación...&#10;• Retirada de tabiques..."></textarea>
                 </div>
             </div>
 
@@ -94,9 +98,21 @@
                 <div style="height: 26px; padding-top: 2px;"><input type="text" id="out-fecha" class="input-limpio font-medium" readonly></div>
             </div>
 
-            <!-- TRABAJOS A REALIZAR -->
-            <div class="absolute" style="top: 335px; left: 70px; width: 670px; height: 380px;">
-                <pre id="out-trabajos" class="w-full h-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit;"></pre>
+            <!-- TRABAJOS A REALIZAR + TEXTOS INFERIORES UNIFICADOS -->
+            <div class="absolute flex flex-col justify-between" style="top: 335px; left: 70px; width: 670px; height: 460px;">
+                <!-- Texto principal de trabajos (crece hacia abajo) -->
+                <pre id="out-trabajos" class="w-full bg-transparent border-none text-slate-800 text-[13px] leading-relaxed whitespace-pre-wrap font-sans" style="font-family: inherit; margin: 0;"></pre>
+                
+                <!-- Bloque fijo inferior alineado al final del espacio -->
+                <div class="flex flex-col gap-2 pb-2">
+                    <div class="text-[13px] font-normal" style="color: #1e3a8a;">Entrega a cuenta la cantidad del 50%:</div>
+                    <div class="text-[13px] font-medium text-center" style="color: #dc2626;">Mano de obra y desplazamiento incluido</div>
+                </div>
+            </div>
+
+            <!-- TOTAL (SIN IVA) -->
+            <div class="absolute" style="top: 818px; left: 565px; width: 195px; height: 35px;">
+                <input type="text" id="out-total" class="input-limpio font-bold text-center text-slate-800" style="font-size: 16px;" readonly>
             </div>
 
         </div>
@@ -113,12 +129,14 @@
         const vDireccion = document.getElementById('val-direccion');
         const vTelefono = document.getElementById('val-telefono');
         const vFecha = document.getElementById('val-fecha');
+        const vTotal = document.getElementById('val-total');
         const vTrabajos = document.getElementById('val-trabajos');
 
         const oNombre = document.getElementById('out-nombre');
         const oDireccion = document.getElementById('out-direccion');
         const oTelefono = document.getElementById('out-telefono');
         const oFecha = document.getElementById('out-fecha');
+        const oTotal = document.getElementById('out-total');
         const oTrabajos = document.getElementById('out-trabajos');
 
         function actualizarVista() {
@@ -126,10 +144,11 @@
             oDireccion.value = vDireccion.value;
             oTelefono.value = vTelefono.value;
             oFecha.value = vFecha.value;
+            oTotal.value = vTotal.value;
             oTrabajos.textContent = vTrabajos.value;
         }
 
-        [vNombre, vDireccion, vTelefono, vFecha, vTrabajos].forEach(el => {
+        [vNombre, vDireccion, vTelefono, vFecha, vTotal, vTrabajos].forEach(el => {
             el.addEventListener('input', actualizarVista);
         });
 
