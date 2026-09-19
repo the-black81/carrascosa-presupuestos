@@ -1,330 +1,366 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Configuración - Presupuestos</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reformas Integrales Carrascosa</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
+        body { background: #e2e8f0; margin: 0; padding: 20px; color: #1e293b; }
+        .app-container { display: flex; gap: 20px; max-width: 1600px; margin: 0 auto; }
+        .panel-control { flex: 1; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); min-width: 380px; }
+        .preview-container { flex: 1.2; display: flex; justify-content: center; }
+        
+        h2, h3 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
+        h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 14px; }
+        .form-group { margin-bottom: 8px; }
+        label { display: block; font-weight: bold; font-size: 11px; color: #1b365d; margin-bottom: 2px; }
+        input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
+        .row { display: flex; gap: 8px; }
+        
+        .item-row { display: flex; gap: 4px; margin-bottom: 6px; align-items: center; background: #f8fafc; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        .btn { background: #1b365d; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 5px; font-size: 12px; }
+        .btn-green { background: #059669; margin-top: 15px; padding: 12px; font-size: 14px; }
+        .btn-blue { background: #2563eb; margin-top: 8px; padding: 12px; font-size: 14px; }
+        .btn-toggle { background: #7c3aed; margin-top: 8px; padding: 10px; font-size: 13px; font-weight: bold; transition: all 0.2s ease; }
+        .btn-orange { background: #d97706; margin-top: 8px; padding: 8px; font-size: 12px; }
+        .btn-red { background: #dc2626; color: white; margin-top: 6px; padding: 6px; font-size: 11px; }
+        .btn-del { background: #dc2626; color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; }
+        .btn-gray { background: #475569; color: white; margin-top: 6px; padding: 8px; font-size: 12px; }
+        
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 8px; margin-bottom: 8px; cursor: pointer; font-size: 12px; font-weight: bold; color: #1b365d; }
+        .checkbox-group input { width: auto; cursor: pointer; }
 
-  <!-- ========================================== -->
-  <!-- 1. ESTILOS Y APARIENCIA (CSS)              -->
-  <!-- ========================================== -->
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        .page-a4 { 
+            width: 210mm; 
+            min-height: 295mm;
+            background: white; 
+            padding: 8mm 10mm 10mm 10mm; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); 
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            font-size: 10px; 
+            color: #1e293b;
+            box-sizing: border-box;
+        }
+        
+        .header { display: flex; justify-content: space-between; margin-bottom: 6px; align-items: flex-start; }
+        .logo-img { max-width: 180px; max-height: 65px; object-fit: contain; display: block; margin-bottom: 2px; margin-top: -2px; }
+        .company-info { font-size: 9px; color: #334155; line-height: 1.2; }
+        .company-name { font-weight: bold; color: #0f172a; font-size: 10px; }
+        
+        .client-box { background: #f8fafc; border-radius: 6px; padding: 6px 8px; width: 230px; font-size: 9px; line-height: 1.25; border: 1px solid #e2e8f0; }
+        .client-box strong { color: #1b365d; display: inline-block; width: 55px; }
+        
+        .doc-bar { background: #f1f5f9; padding: 4px 8px; font-weight: bold; color: #1b365d; display: flex; justify-content: space-between; margin-bottom: 6px; border-radius: 3px; font-size: 10px; }
+        
+        .proyecto-title {
+            background: #e2e8f0;
+            color: #1b365d;
+            font-weight: bold;
+            padding: 4px 8px;
+            font-size: 10px;
+            border-radius: 3px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background-color: #f4f6f9;
-      color: #1a2530;
-      padding: 15px;
-    }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-bottom: 10px; }
+        th { background: #1b365d; color: white; padding: 4px 6px; font-size: 9px; text-align: left; font-weight: bold; }
+        td { border-bottom: 1px solid #e2e8f0; padding: 4px 6px; font-size: 9px; color: #334155; word-wrap: break-word; page-break-inside: avoid; }
+        tr { page-break-inside: avoid; }
 
-    .panel-container {
-      max-width: 450px;
-      margin: 0 auto;
-      background: #ffffff;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
+        .footer-block { 
+            width: 100%; 
+            margin-top: auto; 
+            padding-top: 10px;
+            page-break-inside: avoid; 
+        }
 
-    h1.panel-title {
-      font-size: 1.6rem;
-      color: #0f2a4a;
-      margin-bottom: 15px;
-      border-bottom: 2px solid #0f2a4a;
-      padding-bottom: 8px;
-    }
-
-    .section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: #0f2a4a;
-      margin-top: 15px;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: #334155;
-      margin-bottom: 4px;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      background-color: #f8fafc;
-    }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .row-btn {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 5px;
-    }
-
-    /* Botones */
-    .btn {
-      width: 100%;
-      padding: 11px;
-      border: none;
-      border-radius: 6px;
-      font-weight: 700;
-      font-size: 0.88rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-
-    .btn-dark { background-color: #334155; color: #fff; }
-    .btn-navy { background-color: #1e3a8a; color: #fff; }
-    .btn-purple { background-color: #7c3aed; color: #fff; }
-    .btn-danger { background-color: #dc2626; color: #fff; }
-
-    /* Desplegables (Accordion) */
-    details {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      margin-bottom: 15px;
-    }
-
-    summary {
-      padding: 10px 12px;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
-      color: #0f2a4a;
-      user-select: none;
-    }
-
-    .details-content {
-      padding: 12px;
-      border-top: 1px solid #e2e8f0;
-      background: #ffffff;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .sub-section-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: #64748b;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid #f1f5f9;
-    }
-  </style>
+        .totals-container { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px; width: 100%; }
+        .leyenda { color: #dc2626; font-weight: bold; font-size: 9px; padding-bottom: 2px; flex: 1; }
+        
+        .totals-box { width: 190px; background: #f1f5f9; padding: 5px 8px; border-radius: 4px; font-size: 9px; margin-left: auto; }
+        .totals-row { display: flex; justify-content: space-between; margin-bottom: 2px; color: #1b365d; font-weight: bold; }
+        .totals-total { font-size: 10.5px; border-top: 1px solid #cbd5e1; padding-top: 2px; margin-top: 2px; color: #0f172a; }
+        
+        .conditions-box { background: #f8fafc; padding: 5px 8px; border-radius: 4px; font-size: 8.5px; color: #1e293b; font-weight: 500; margin-top: 2px; line-height: 1.3; border: 1px solid #e2e8f0; }
+        .bank-details { margin-top: 3px; padding-top: 3px; border-top: 1px solid #cbd5e1; font-weight: bold; color: #1b365d; }
+        
+        .signatures { display: flex; justify-content: space-between; margin-top: 6px; font-size: 8.5px; color: #334155; }
+        .sig-box { width: 48%; background: #fafafa; padding: 4px; height: 35px; border-radius: 4px; border: 1px solid #e2e8f0; }
+        
+        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 12px; }
+    </style>
 </head>
 <body>
 
-  <div class="panel-container">
-    
-    <h1 class="panel-title">Panel de Configuración</h1>
+<div class="app-container">
+    <!-- PANEL IZQUIERDO DE CONFIGURACIÓN -->
+    <div class="panel-control">
+        <h2>Panel de Configuración</h2>
 
-    <!-- ========================================================= -->
-    <!-- 2. COPIA DE SEGURIDAD (MEMORIA, HISTORIAL Y RESET DENTRO) -->
-    <!-- ========================================================= -->
-    <details open>
-      <summary>▶ 💾 Copia de Seguridad (Backup)</summary>
-      <div class="details-content">
-        
-        <!-- SUB-BLOQUE: MEMORIA E HISTORIAL -->
-        <div class="sub-section-title">📚 Memoria e Historial</div>
-        
-        <div class="form-group" style="margin-bottom: 6px;">
-          <label>Cargar Documento Emitido Anteriormente</label>
-          <select id="select-memoria">
-            <option>-- Seleccionar de la Memoria --</option>
-          </select>
+        <!-- BLOQUE UNIFICADO DE SEGURIDAD, MEMORIA Y RESET -->
+        <details style="margin-bottom: 15px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+            <summary>💾 Copia de Seguridad, Memoria e Historial</summary>
+            
+            <div style="margin-top: 8px;">
+                <label>Cargar Documento Emitido Anteriormente</label>
+                <select id="selectHistorial" onchange="cargarDocumentoDesdeHistorial()">
+                    <option value="">-- Seleccionar de la Memoria --</option>
+                </select>
+            </div>
+
+            <div class="row" style="margin-top: 8px;">
+                <button class="btn btn-gray" style="flex:1;" onclick="guardarEnHistorial(true)">💾 Guardar en Memoria</button>
+                <button class="btn btn-red" style="flex:1;" onclick="eliminarDocumentoActualDelHistorial()">🗑️ Borrar de Memoria</button>
+            </div>
+
+            <hr style="border:0; border-top: 1px dashed #cbd5e1; margin: 10px 0;">
+
+            <button class="btn btn-orange" onclick="descargarCopiaSeguridad()">📥 Descargar Backup con Fecha Actual</button>
+            <div class="form-group" style="margin-top:6px;">
+                <label>Restaurar Copia de Seguridad (.json)</label>
+                <input type="file" id="inputBackup" accept=".json" onchange="restaurarCopiaSeguridad(event)">
+            </div>
+
+            <hr style="border:0; border-top: 1px dashed #cbd5e1; margin: 10px 0;">
+
+            <button class="btn btn-red" onclick="resetearContadoresYBorrarTodo()">⚠️ Resetear Completo (Descarga Backup Automático)</button>
+        </details>
+
+        <h3>Numeración del Documento</h3>
+        <div class="row">
+            <div class="form-group" style="flex:1;">
+                <label>Tipo Documento</label>
+                <select id="tipoDoc" onchange="cambiarTipoDocUI()">
+                    <option value="PRESUPUESTO">Presupuesto</option>
+                    <option value="FACTURA">Factura</option>
+                </select>
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Nº Documento (Escribe ej: 2 o 500)</label>
+                <input type="text" id="numDoc" value="" oninput="detectarNumeroManualYCargar()">
+            </div>
         </div>
 
-        <div class="row-btn">
-          <button type="button" class="btn btn-dark" onclick="guardarEnMemoria()">💾 Guardar en Memoria</button>
-          <button type="button" class="btn btn-danger" onclick="borrarDeMemoria()">🗑️ Borrar de Memoria</button>
+        <button class="btn" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
+
+        <!-- BOTÓN ÚNICO DINÁMICO -->
+        <button id="btnToggleDoc" class="btn btn-toggle" onclick="alternarTipoDocumento()">🔄 Cambiar a FACTURA</button>
+
+        <div class="form-group" style="margin-top:12px;">
+            <label>Subir Nuevo Logo al Banco de Logos</label>
+            <input type="file" id="inputLogo" accept="image/*" onchange="guardarNuevoLogo(event)">
+        </div>
+        <div class="form-group">
+            <label>Seleccionar Logo de la Galería</label>
+            <select id="selectLogo" onchange="seleccionarLogoGuardado()">
+                <option value="">- Sin Logo / Texto -</option>
+            </select>
         </div>
 
-        <!-- SUB-BLOQUE: ARCHIVOS JSON -->
-        <div class="sub-section-title" style="margin-top: 6px;">📂 Archivos de Respaldo</div>
+        <details>
+            <summary>✏️ Editar Datos de la Empresa</summary>
+            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
+                <div class="form-group">
+                    <label>Título Comercial (Fallback si no hay Logo)</label>
+                    <input type="text" id="empTituloComercial" value="REFORMAS INTEGRALES CARRASCOSA" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Nombre Fiscal / Empresa</label>
+                    <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+                </div>
+                <div class="row">
+                    <div class="form-group" style="flex:1;">
+                        <label>CIF/NIF</label>
+                        <input type="text" id="empNif" value="48363668G" oninput="actualizar()">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Teléfono</label>
+                        <input type="text" id="empTel" value="622 356 504" oninput="actualizar()">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Dirección Empresa</label>
+                    <input type="text" id="empDir" value="Avenida Denia 88 | 03016 Alicante" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Titular de la Cuenta / Banco</label>
+                    <input type="text" id="empTitularIban" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+                </div>
+                <div class="form-group">
+                    <label>Número de IBAN</label>
+                    <input type="text" id="empIban" value="ES40 2100 2158 6402 0085 2354" oninput="actualizar()">
+                </div>
+            </div>
+        </details>
 
-        <div class="row-btn">
-          <button type="button" class="btn btn-dark" onclick="descargarBackupJSON()">⬇️ Descargar Copia (JSON)</button>
-          <button type="button" class="btn btn-dark" onclick="document.getElementById('input-cargar-backup').click()">⬆️ Cargar Copia (JSON)</button>
+        <div class="row">
+            <div class="form-group" style="flex:1;">
+                <label>Fecha</label>
+                <input type="text" id="fechaDoc" value="" oninput="actualizar()">
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Validez del documento</label>
+                <input type="text" id="validezDoc" value="30 Días" oninput="actualizar()">
+            </div>
         </div>
-        <input type="file" id="input-cargar-backup" accept=".json" style="display:none;" onchange="cargarBackupJSON(event)">
-        
-        <!-- BOTÓN ROJO DE RESET -->
-        <div class="sub-section-title" style="margin-top: 6px;">🚨 Zona de Peligro</div>
-        <button type="button" class="btn btn-danger" onclick="ejecutarResetTotal()">
-          ⚠️ Resetear Completo (Descarga Backup Automático)
-        </button>
 
-      </div>
-    </details>
+        <h3>Datos del Cliente</h3>
+        <div class="form-group">
+            <label>Cargar Cliente Guardado</label>
+            <select id="selectCliente" onchange="cargarClienteSeleccionado()">
+                <option value="">-- Nuevo / Limpiar Cliente --</option>
+            </select>
+        </div>
+        <div class="form-group"><input type="text" id="cliNombre" value="" placeholder="Nombre / Empresa" oninput="actualizar()"></div>
+        <div class="form-group"><input type="text" id="cliDir" value="" placeholder="Dirección Cliente" oninput="actualizar()"></div>
+        <div class="row">
+            <div class="form-group" style="flex:1;"><input type="text" id="cliTel" value="" placeholder="Teléfono" oninput="actualizar()"></div>
+            <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="" placeholder="CIF/NIF" oninput="actualizar()"></div>
+        </div>
+        <div class="form-group"><input type="text" id="cliEmail" value="" placeholder="Correo Electrónico" oninput="actualizar()"></div>
+        <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
 
+        <!-- SECCIÓN DE PROYECTO / UBICACIÓN -->
+        <h3>Proyecto / Ubicación</h3>
+        <div class="form-group">
+            <input type="text" id="txtProyecto" value="" placeholder="Ej: ASEO, COMEDOR, REFORMA GENERAL" oninput="actualizar()">
+        </div>
 
-    <!-- ========================================== -->
-    <!-- 3. NUMERACIÓN DEL DOCUMENTO                -->
-    <!-- ========================================== -->
-    <div class="section-title">Numeración del Documento</div>
+        <!-- SECCIÓN DE TRABAJOS Y UNIDADES -->
+        <h3>Trabajos y Unidades</h3>
+        <div id="itemsContainer"></div>
+        <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
-    <div class="grid-2">
-      <div class="form-group">
-        <label>Tipo Documento</label>
-        <select id="tipo-documento">
-          <option>Presupuesto</option>
-          <option>Factura</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Nº Documento (Escribe ej: 2 o 500)</label>
-        <input type="text" id="num-documento" value="PRES-2026-001">
-      </div>
+        <h3>Opciones de Impuestos y Visibilidad</h3>
+        <div class="form-group">
+            <label>IVA Aplicable</label>
+            <select id="tipoIva" onchange="actualizar()">
+                <option value="10">IVA Reducido (10%)</option>
+                <option value="21">IVA General (21%)</option>
+                <option value="0">Sin IVA (0%)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Texto Nota del Concepto Bancario (Editable)</label>
+            <input type="text" id="txtConceptoBancario" value="(Indicar dirección de la obra en el concepto de la transferencia)" oninput="actualizar()">
+        </div>
+
+        <label class="checkbox-group">
+            <input type="checkbox" id="chkManoObra" checked onchange="actualizar()">
+            Mostrar texto rojo "Mano de obra y desplazamiento incluido"
+        </label>
+
+        <label class="checkbox-group">
+            <input type="checkbox" id="chkFormaPago" checked onchange="actualizar()">
+            Mostrar IBAN y Datos Bancarios
+        </label>
+
+        <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR PDF</button>
+        <button class="btn btn-blue" onclick="descargarJPG()">🖼️ DESCARGAR JPG</button>
     </div>
 
-    <button type="button" class="btn btn-navy" style="margin-bottom: 8px;" onclick="nuevoDocumentoSiguiente()">
-      ➕ Nuevo Documento Siguiente
-    </button>
+    <!-- VISTA PREVIA HOJA A4 -->
+    <div class="preview-container">
+        <div class="page-a4" id="hojaA4">
+            <div>
+                <div class="header">
+                    <div>
+                        <img id="imgLogo" class="logo-img" src="" alt="Logo Carrascosa" style="display:none;">
+                        <div id="textLogoFallback" style="font-weight:bold; font-size:14px; color:#1b365d; margin-bottom:4px; line-height: 1.1;">
+                            REFORMAS INTEGRALES<br><span style="font-size:16px;">CARRASCOSA</span>
+                        </div>
+                        <div class="company-info">
+                            <div class="company-name" id="lblEmpNombre">CARRASCOSA ARAUJO ALEJANDRO</div>
+                            CIF/NIF: <span id="lblEmpNif">48363668G</span><br>
+                            <span id="lblEmpDir">Avenida Denia 88 | 03016 Alicante</span><br>
+                            Teléfono: <span id="lblEmpTel">622 356 504</span><br>
+                            e-mail: <span id="lblEmpEmail">suministroscarrascosa@gmail.com</span>
+                        </div>
+                    </div>
 
-    <button type="button" class="btn btn-purple" style="margin-bottom: 12px;" onclick="cambiarAFactura()">
-      🔄 Cambiar a FACTURA
-    </button>
+                    <div class="client-box">
+                        <div style="font-weight:bold; color:#1b365d; margin-bottom:3px;">CLIENTE:</div>
+                        <strong>Nombre:</strong> <span id="lblCliNombre">-</span><br>
+                        <strong>Dirección:</strong> <span id="lblCliDir">-</span><br>
+                        <strong>Teléfono:</strong> <span id="lblCliTel">-</span><br>
+                        <strong>Correo:</strong> <span id="lblCliEmail">-</span><br>
+                        <strong>CIF/NIF:</strong> <span id="lblCliNif">-</span>
+                    </div>
+                </div>
 
+                <div class="doc-bar">
+                    <span id="lblTituloDoc">PRESUPUESTO Nº: PRES-2026-001</span>
+                    <span id="lblFechaDoc">FECHA: 19/09/2026</span>
+                </div>
 
-    <!-- ========================================== -->
-    <!-- 4. LOGO Y DATOS DE EMPRESA                 -->
-    <!-- ========================================== -->
-    <div class="form-group">
-      <label>Subir Nuevo Logo al Banco de Logos</label>
-      <input type="file" id="upload-logo">
+                <div class="proyecto-title" id="boxProyectoDisplay" style="display:none;">
+                    PROYECTO: <span id="lblProyecto"></span>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 12%;">CANT.</th>
+                            <th style="width: 52%;">CONCEPTO / TRABAJOS A REALIZAR</th>
+                            <th style="width: 18%; text-align: right;">P. UNIT.</th>
+                            <th style="width: 18%; text-align: right;">IMPORTE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaBody"></tbody>
+                </table>
+            </div>
+
+            <div class="footer-block">
+                <div class="totals-container">
+                    <div class="leyenda" id="boxManoObra">
+                        Mano de obra y desplazamiento incluido
+                    </div>
+
+                    <div class="totals-box">
+                        <div class="totals-row"><span>BASE IMPONIBLE:</span> <span id="lblBase">0,00 €</span></div>
+                        <div class="totals-row"><span>IVA (<span id="lblPorcentajeIva">10</span>%):</span> <span id="lblCuotaIva">0,00 €</span></div>
+                        <div class="totals-row totals-total"><span>TOTAL GENERAL:</span> <span id="lblTotalGeneral">0,00 €</span></div>
+                    </div>
+                </div>
+
+                <div class="conditions-box">
+                    <strong style="color:#1b365d;">FORMA DE PAGO:</strong><br>
+                    • Se abona el 50% (<span id="lblAdelanto">0,00 €</span>) para formalizar el pedido.<br>
+                    • Se realizará un 2º pago del 25% (<span id="lblPago2">0,00 €</span>) a mitad de obra.<br>
+                    • Pago final restante del 25% (<span id="lblPagoFinal">0,00 €</span>) a la finalización de los trabajos.<br>
+                    • Validez del documento: <span id="lblValidezDoc">30 Días</span>.<br>
+                    
+                    <div class="bank-details" id="boxIbanDetails">
+                        Titular: <span id="lblTitularIban">CARRASCOSA ARAUJO ALEJANDRO</span> &nbsp;|&nbsp; 
+                        IBAN: <span id="lblIban">ES40 2100 2158 6402 0085 2354</span><br>
+                        <span style="font-weight: normal; color: #475569; font-size: 8px;" id="lblConceptoNota">(Indicar dirección de la obra en el concepto de la transferencia)</span>
+                    </div>
+                </div>
+
+                <div class="signatures">
+                    <div class="sig-box">
+                        <strong>Firma Empresa:</strong><br>
+                        <span id="lblEmpNombreFirma">CARRASCOSA ARAUJO ALEJANDRO</span>
+                    </div>
+                    <div class="sig-box">
+                        <strong>Firma / Aceptación Cliente:</strong><br>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <div class="form-group">
-      <label>Seleccionar Logo de la Galería</label>
-      <select id="select-logo">
-        <option>- Sin Logo / Texto -</option>
-      </select>
-    </div>
-
-    <details>
-      <summary>▶ ✏️ Editar Datos de la Empresa</summary>
-      <div class="details-content">
-        <!-- Campos de empresa aquí -->
-      </div>
-    </details>
-
-    <div class="grid-2">
-      <div class="form-group">
-        <label>Fecha</label>
-        <input type="text" value="19/09/2026">
-      </div>
-      <div class="form-group">
-        <label>Validez del documento</label>
-        <input type="text" value="30 Días">
-      </div>
-    </div>
-
-
-    <!-- ========================================== -->
-    <!-- 5. DATOS DEL CLIENTE                       -->
-    <!-- ========================================== -->
-    <div class="section-title">Datos del Cliente</div>
-
-    <div class="form-group">
-      <label>Cargar Cliente Guardado</label>
-      <select id="select-cliente">
-        <option>-- Nuevo / Limpiar Cliente --</option>
-      </select>
-    </div>
-
-    <div class="form-group">
-      <label>Nombre / Empresa</label>
-      <input type="text" placeholder="Nombre del cliente">
-    </div>
-
-  </div>
-
-
-  <!-- ========================================== -->
-  <!-- 6. LÓGICA Y FUNCIONALIDAD JS               -->
-  <!-- ========================================== -->
-  <script>
-    // Función de Reset Total
-    function ejecutarResetTotal() {
-      const confirmar = confirm("⚠️ ¿ESTÁS SEGURO?\n\nSe descargará una copia de seguridad automática y se reiniciará todo el sistema por completo.");
-      
-      if (confirmar) {
-        // 1. Descarga automática antes de borrar
-        descargarBackupJSON();
-
-        // 2. Borrado de memoria local
-        localStorage.clear();
-
-        // 3. Alerta y recarga
-        alert("Sistema reiniciado correctamente.");
-        window.location.reload();
-      }
-    }
-
-    function descargarBackupJSON() {
-      const backupData = JSON.stringify(localStorage);
-      const blob = new Blob([backupData], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = `backup_auto_${Date.now()}.json`;
-      a.click();
-    }
-
-    function cargarBackupJSON(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        try {
-          const data = JSON.parse(e.target.result);
-          Object.keys(data).forEach(key => {
-            localStorage.setItem(key, data[key]);
-          });
-          alert("Copia de seguridad restaurada con éxito.");
-          window.location.reload();
-        } catch (err) {
-          alert("Error al procesar el archivo JSON.");
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    function guardarEnMemoria() { alert("Guardado en memoria."); }
-    function borrarDeMemoria() { alert("Borrado de memoria."); }
-    function nuevoDocumentoSiguiente() { alert("Nuevo documento listo."); }
-    function cambiarAFactura() { alert("Cambiado a Factura."); }
-  </script>
+</div>
 
 </body>
 </html>
