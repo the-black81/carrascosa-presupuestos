@@ -15,7 +15,7 @@
         .preview-container { flex: 1.2; display: flex; justify-content: center; }
         
         h2, h3 { color: #1b365d; margin-top: 0; border-bottom: 2px solid #1b365d; padding-bottom: 6px; }
-        h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 14px; }
+        h3 { border-bottom: 1px solid #cbd5e1; margin-top: 15px; font-size: 13px; }
         .form-group { margin-bottom: 8px; }
         label { display: block; font-weight: bold; font-size: 11px; color: #1b365d; margin-bottom: 2px; }
         input, select { width: 100%; padding: 6px 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 12px; }
@@ -94,7 +94,7 @@
         .signatures { display: flex; justify-content: space-between; margin-top: 6px; font-size: 8.5px; color: #334155; }
         .sig-box { width: 48%; background: #fafafa; padding: 4px; height: 35px; border-radius: 4px; border: 1px solid #e2e8f0; }
         
-        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 8px; font-size: 12px; }
+        details summary { cursor: pointer; font-weight: bold; color: #1b365d; margin-bottom: 6px; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -102,32 +102,9 @@
 <div class="app-container">
     <!-- PANEL IZQUIERDO DE CONFIGURACIÓN -->
     <div class="panel-control">
-        <h2>Panel de Configuración</h2>
+        <h2>Panel de Control</h2>
 
-        <!-- BÚSQUEDA Y HISTORIAL -->
-        <h3>📚 Memoria e Historial</h3>
-        <div class="form-group">
-            <label>Cargar Documento Emitido Anteriormente</label>
-            <select id="selectHistorial" onchange="cargarDocumentoDesdeHistorial()">
-                <option value="">-- Seleccionar de la Memoria --</option>
-            </select>
-        </div>
-        <div class="row">
-            <button class="btn btn-gray" style="flex:1;" onclick="guardarEnHistorial(true)">💾 Guardar en Memoria</button>
-            <button class="btn btn-red" style="flex:1;" onclick="eliminarDocumentoActualDelHistorial()">🗑️ Borrar de Memoria</button>
-        </div>
-
-        <!-- OPCIONES DE BACKUP -->
-        <details style="margin-top: 12px; background: #f8fafc; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-            <summary>💾 Copia de Seguridad (Backup)</summary>
-            <button class="btn btn-orange" onclick="descargarCopiaSeguridad()">📥 Descargar Backup con Fecha Actual</button>
-            <div class="form-group" style="margin-top:6px;">
-                <label>Restaurar Copia de Seguridad (.json)</label>
-                <input type="file" id="inputBackup" accept=".json" onchange="restaurarCopiaSeguridad(event)">
-            </div>
-        </details>
-
-        <h3>Numeración del Documento</h3>
+        <!-- TIPO Y NÚMERO DE DOCUMENTO -->
         <div class="row">
             <div class="form-group" style="flex:1;">
                 <label>Tipo Documento</label>
@@ -137,67 +114,15 @@
                 </select>
             </div>
             <div class="form-group" style="flex:1;">
-                <label>Nº Documento (Escribe ej: 2 o 500)</label>
+                <label>Nº Correlativo</label>
                 <input type="text" id="numDoc" value="1" oninput="actualizar()">
             </div>
         </div>
 
-        <button class="btn" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
         <button id="btnToggleDoc" class="btn btn-toggle" onclick="alternarTipoDocumento()">🔄 Cambiar a FACTURA</button>
-        <button class="btn btn-red" onclick="resetearContadoresYBorrarTodo()">⚠️ Resetear Completo (Descarga Backup Automático)</button>
+        <button class="btn" style="background:#0f766e; margin-top:6px;" onclick="crearNuevoDocumentoCorrelativo()">➕ Nuevo Documento Siguiente</button>
 
-        <div class="form-group" style="margin-top:12px;">
-            <label>Subir Nuevo Logo al Banco de Logos</label>
-            <input type="file" id="inputLogo" accept="image/*" onchange="guardarNuevoLogo(event)">
-        </div>
-        <div class="form-group">
-            <label>Seleccionar Logo de la Galería</label>
-            <select id="selectLogo" onchange="seleccionarLogoGuardado()">
-                <option value="">- Sin Logo / Texto -</option>
-            </select>
-        </div>
-
-        <details>
-            <summary>✏️ Editar Datos de la Empresa</summary>
-            <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 10px;">
-                <div class="form-group">
-                    <label>Título Comercial (Fallback si no hay Logo)</label>
-                    <input type="text" id="empTituloComercial" value="REFORMAS INTEGRALES CARRASCOSA" oninput="actualizar()">
-                </div>
-                <div class="form-group">
-                    <label>Nombre Fiscal / Empresa</label>
-                    <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
-                </div>
-                <div class="row">
-                    <div class="form-group" style="flex:1;">
-                        <label>CIF/NIF</label>
-                        <input type="text" id="empNif" value="48363668G" oninput="actualizar()">
-                    </div>
-                    <div class="form-group" style="flex:1;">
-                        <label>Teléfono</label>
-                        <input type="text" id="empTel" value="622 356 504" oninput="actualizar()">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label>Dirección Empresa</label>
-                    <input type="text" id="empDir" value="Avenida Denia 88 | 03016 Alicante" oninput="actualizar()">
-                </div>
-                <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
-                </div>
-                <div class="form-group">
-                    <label>Titular de la Cuenta / Banco</label>
-                    <input type="text" id="empTitularIban" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
-                </div>
-                <div class="form-group">
-                    <label>Número de IBAN</label>
-                    <input type="text" id="empIban" value="ES40 2100 2158 6402 0085 2354" oninput="actualizar()">
-                </div>
-            </div>
-        </details>
-
-        <div class="row">
+        <div class="row" style="margin-top:8px;">
             <div class="form-group" style="flex:1;">
                 <label>Fecha</label>
                 <input type="text" id="fechaDoc" value="" oninput="actualizar()">
@@ -208,11 +133,12 @@
             </div>
         </div>
 
+        <!-- CLIENTE -->
         <h3>Datos del Cliente</h3>
         <div class="form-group">
-            <label>Cargar Cliente Guardado</label>
+            <label>Cargar Cliente Registrado</label>
             <select id="selectCliente" onchange="cargarClienteSeleccionado()">
-                <option value="">-- Nuevo / Limpiar Cliente --</option>
+                <option value="">-- Nuevo / Limpiar Formulario --</option>
             </select>
         </div>
         <div class="form-group"><input type="text" id="cliNombre" value="" placeholder="Nombre / Empresa" oninput="actualizar()"></div>
@@ -222,8 +148,9 @@
             <div class="form-group" style="flex:1;"><input type="text" id="cliNif" value="" placeholder="CIF/NIF" oninput="actualizar()"></div>
         </div>
         <div class="form-group"><input type="text" id="cliEmail" value="" placeholder="Correo Electrónico" oninput="actualizar()"></div>
-        <button class="btn" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente en Memoria</button>
+        <button class="btn btn-gray" onclick="guardarClienteActual()">💾 Guardar / Actualizar Cliente</button>
 
+        <!-- PROYECTO Y LÍNEAS -->
         <h3>Proyecto / Ubicación</h3>
         <div class="form-group">
             <input type="text" id="txtProyecto" value="" placeholder="Ej: ASEO, COMEDOR, REFORMA GENERAL" oninput="actualizar()">
@@ -233,7 +160,8 @@
         <div id="itemsContainer"></div>
         <button class="btn" onclick="agregarItem()">+ Añadir Línea de Trabajo</button>
 
-        <h3>Opciones de Impuestos y Visibilidad</h3>
+        <!-- IMPUESTOS -->
+        <h3>Opciones de Impuestos y Ajustes</h3>
         <div class="form-group">
             <label>IVA Aplicable</label>
             <select id="tipoIva" onchange="actualizar()">
@@ -244,7 +172,7 @@
         </div>
 
         <div class="form-group">
-            <label>Texto Nota del Concepto Bancario (Editable)</label>
+            <label>Nota del Concepto Bancario</label>
             <input type="text" id="txtConceptoBancario" value="(Indicar dirección de la obra en el concepto de la transferencia)" oninput="actualizar()">
         </div>
 
@@ -258,8 +186,82 @@
             Mostrar IBAN y Datos Bancarios
         </label>
 
+        <!-- BOTONES DESCARGA -->
         <button class="btn btn-green" onclick="descargarPDF()">📄 DESCARGAR PDF</button>
         <button class="btn btn-blue" onclick="descargarJPG()">🖼️ DESCARGAR JPG</button>
+
+        <!-- SECCIÓN OCULTA / AVANZADA -->
+        <details style="margin-top: 20px; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #cbd5e1;">
+            <summary>⚙️ Opciones avanzadas, Historial y Backup</summary>
+            
+            <h3 style="margin-top:10px;">📚 Memoria e Historial</h3>
+            <div class="form-group">
+                <label>Cargar Documento Emitido</label>
+                <select id="selectHistorial" onchange="cargarDocumentoDesdeHistorial()">
+                    <option value="">-- Seleccionar del Historial --</option>
+                </select>
+            </div>
+            <div class="row">
+                <button class="btn btn-gray" style="flex:1;" onclick="guardarEnHistorial(true)">💾 Guardar en Memoria</button>
+                <button class="btn btn-red" style="flex:1;" onclick="eliminarDocumentoActualDelHistorial()">🗑️ Borrar de Memoria</button>
+            </div>
+
+            <h3>🖼️ Logos de la Empresa</h3>
+            <div class="form-group">
+                <label>Subir Nuevo Logo</label>
+                <input type="file" id="inputLogo" accept="image/*" onchange="guardarNuevoLogo(event)">
+            </div>
+            <div class="form-group">
+                <label>Seleccionar Logo Guardado</label>
+                <select id="selectLogo" onchange="seleccionarLogoGuardado()">
+                    <option value="">- Sin Logo / Texto -</option>
+                </select>
+            </div>
+
+            <h3>✏️ Datos de la Empresa</h3>
+            <div class="form-group">
+                <label>Título Comercial (Fallback)</label>
+                <input type="text" id="empTituloComercial" value="REFORMAS INTEGRALES CARRASCOSA" oninput="actualizar()">
+            </div>
+            <div class="form-group">
+                <label>Nombre Fiscal / Empresa</label>
+                <input type="text" id="empNombre" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+            </div>
+            <div class="row">
+                <div class="form-group" style="flex:1;">
+                    <label>CIF/NIF</label>
+                    <input type="text" id="empNif" value="48363668G" oninput="actualizar()">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Teléfono</label>
+                    <input type="text" id="empTel" value="622 356 504" oninput="actualizar()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Dirección Empresa</label>
+                <input type="text" id="empDir" value="Avenida Denia 88 | 03016 Alicante" oninput="actualizar()">
+            </div>
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <input type="text" id="empEmail" value="suministroscarrascosa@gmail.com" oninput="actualizar()">
+            </div>
+            <div class="form-group">
+                <label>Titular del Banco</label>
+                <input type="text" id="empTitularIban" value="CARRASCOSA ARAUJO ALEJANDRO" oninput="actualizar()">
+            </div>
+            <div class="form-group">
+                <label>Número de IBAN</label>
+                <input type="text" id="empIban" value="ES40 2100 2158 6402 0085 2354" oninput="actualizar()">
+            </div>
+
+            <h3>💾 Copia de Seguridad</h3>
+            <button class="btn btn-orange" onclick="descargarCopiaSeguridad()">📥 Descargar Backup (.json)</button>
+            <div class="form-group" style="margin-top:6px;">
+                <label>Restaurar Backup (.json)</label>
+                <input type="file" id="inputBackup" accept=".json" onchange="restaurarCopiaSeguridad(event)">
+            </div>
+            <button class="btn btn-red" style="margin-top:12px;" onclick="resetearContadoresYBorrarTodo()">⚠️ Resetear Sistema Completo</button>
+        </details>
     </div>
 
     <!-- VISTA PREVIA HOJA A4 -->
@@ -354,7 +356,6 @@
     </div>
 </div>
 
-<!-- LÓGICA JAVASCRIPT INTEGRADA -->
 <script>
     let db = {
         historial: [],
@@ -367,7 +368,6 @@
     };
 
     window.onload = function() {
-        // Establecer fecha de hoy por defecto
         const hoy = new Date();
         const dd = String(hoy.getDate()).padStart(2, '0');
         const mm = String(hoy.getMonth() + 1).padStart(2, '0');
@@ -375,7 +375,7 @@
         document.getElementById('fechaDoc').value = `${dd}/${mm}/${yyyy}`;
 
         cargarDatosStorage();
-        agregarItem(); // Añadir línea inicial vacía
+        agregarItem();
         actualizar();
     };
 
@@ -395,9 +395,8 @@
     }
 
     function refrescarCombos() {
-        // Refrescar combo historial
         const selHist = document.getElementById('selectHistorial');
-        selHist.innerHTML = '<option value="">-- Seleccionar de la Memoria --</option>';
+        selHist.innerHTML = '<option value="">-- Seleccionar del Historial --</option>';
         db.historial.forEach((doc, idx) => {
             let opt = document.createElement('option');
             opt.value = idx;
@@ -405,9 +404,8 @@
             selHist.appendChild(opt);
         });
 
-        // Refrescar combo clientes
         const selCli = document.getElementById('selectCliente');
-        selCli.innerHTML = '<option value="">-- Nuevo / Limpiar Cliente --</option>';
+        selCli.innerHTML = '<option value="">-- Nuevo / Limpiar Formulario --</option>';
         db.clientes.forEach((cli, idx) => {
             let opt = document.createElement('option');
             opt.value = idx;
@@ -415,7 +413,6 @@
             selCli.appendChild(opt);
         });
 
-        // Refrescar combo logos
         const selLogo = document.getElementById('selectLogo');
         selLogo.innerHTML = '<option value="">- Sin Logo / Texto -</option>';
         db.logos.forEach((logo, idx) => {
@@ -467,7 +464,6 @@
             btnToggle.style.background = '#0284c7';
         }
 
-        // Asignar el número correlativo que le toca
         document.getElementById('numDoc').value = db.contadores[tipo] || 1;
         actualizar();
     }
@@ -484,13 +480,15 @@
         const tipo = document.getElementById('tipoDoc').value;
         const num = document.getElementById('numDoc').value.toString().padStart(3, '0');
         const anio = new Date().getFullYear();
-        const prefijo = tipo === 'PRESUPUESTO' ? 'PRES' : 'FACT';
+        
+        // Prefijos correctos: PRES o FAC
+        const prefijo = tipo === 'PRESUPUESTO' ? 'PRES' : 'FAC';
         
         const codigoDoc = `${prefijo}-${anio}-${num}`;
         document.getElementById('lblTituloDoc').textContent = `${tipo} Nº: ${codigoDoc}`;
         document.getElementById('lblFechaDoc').textContent = `FECHA: ${document.getElementById('fechaDoc').value}`;
 
-        // Empresa
+        // Datos Empresa
         document.getElementById('lblEmpNombre').textContent = document.getElementById('empNombre').value;
         document.getElementById('lblEmpNombreFirma').textContent = document.getElementById('empNombre').value;
         document.getElementById('lblEmpNif').textContent = document.getElementById('empNif').value;
@@ -498,7 +496,7 @@
         document.getElementById('lblEmpTel').textContent = document.getElementById('empTel').value;
         document.getElementById('lblEmpEmail').textContent = document.getElementById('empEmail').value;
 
-        // Cliente
+        // Datos Cliente
         document.getElementById('lblCliNombre').textContent = document.getElementById('cliNombre').value || '-';
         document.getElementById('lblCliDir').textContent = document.getElementById('cliDir').value || '-';
         document.getElementById('lblCliTel').textContent = document.getElementById('cliTel').value || '-';
@@ -515,7 +513,7 @@
             boxProj.style.display = 'none';
         }
 
-        // Tabla de Trabajos
+        // Tabla
         const tbody = document.getElementById('tablaBody');
         tbody.innerHTML = '';
         let baseImponible = 0;
@@ -542,7 +540,7 @@
             }
         });
 
-        // Totales e Impuestos
+        // Totales
         const porcIva = parseFloat(document.getElementById('tipoIva').value);
         const cuotaIva = baseImponible * (porcIva / 100);
         const totalGeneral = baseImponible + cuotaIva;
@@ -552,31 +550,26 @@
         document.getElementById('lblCuotaIva').textContent = cuotaIva.toFixed(2) + ' €';
         document.getElementById('lblTotalGeneral').textContent = totalGeneral.toFixed(2) + ' €';
 
-        // Desglose de Pago
         document.getElementById('lblAdelanto').textContent = (totalGeneral * 0.50).toFixed(2) + ' €';
         document.getElementById('lblPago2').textContent = (totalGeneral * 0.25).toFixed(2) + ' €';
         document.getElementById('lblPagoFinal').textContent = (totalGeneral * 0.25).toFixed(2) + ' €';
         document.getElementById('lblValidezDoc').textContent = document.getElementById('validezDoc').value;
 
-        // Banco e IBAN
         document.getElementById('lblTitularIban').textContent = document.getElementById('empTitularIban').value;
         document.getElementById('lblIban').textContent = document.getElementById('empIban').value;
         document.getElementById('lblConceptoNota').textContent = document.getElementById('txtConceptoBancario').value;
 
-        // Visibilidad Checkboxes
         document.getElementById('boxManoObra').style.display = document.getElementById('chkManoObra').checked ? 'block' : 'none';
         document.getElementById('boxIbanDetails').style.display = document.getElementById('chkFormaPago').checked ? 'block' : 'none';
     }
 
-    // MEMORIA E HISTORIAL
     function guardarEnHistorial(alerta = false) {
         const tipo = document.getElementById('tipoDoc').value;
         const num = document.getElementById('numDoc').value.toString().padStart(3, '0');
         const anio = new Date().getFullYear();
-        const prefijo = tipo === 'PRESUPUESTO' ? 'PRES' : 'FACT';
+        const prefijo = tipo === 'PRESUPUESTO' ? 'PRES' : 'FAC';
         const codigoDoc = `${prefijo}-${anio}-${num}`;
 
-        // Obtener ítems
         let items = [];
         document.querySelectorAll('#itemsContainer .item-row').forEach(row => {
             const inputs = row.querySelectorAll('input');
@@ -606,7 +599,6 @@
             items: items
         };
 
-        // Sobrescribir si existe o agregar
         const idxEx = db.historial.findIndex(h => h.codigoDoc === codigoDoc);
         if (idxEx >= 0) {
             db.historial[idxEx] = docData;
@@ -641,7 +633,6 @@
         document.getElementById('chkManoObra').checked = doc.chkManoObra;
         document.getElementById('chkFormaPago').checked = doc.chkFormaPago;
 
-        // Cargar Ítems
         document.getElementById('itemsContainer').innerHTML = '';
         if (doc.items && doc.items.length > 0) {
             doc.items.forEach(it => agregarItem(it.cant, it.desc, it.precio));
@@ -656,7 +647,7 @@
     function eliminarDocumentoActualDelHistorial() {
         const idx = document.getElementById('selectHistorial').value;
         if (idx === '') {
-            alert('Por favor, selecciona un documento del historial para borrar.');
+            alert('Por favor, selecciona un documento del historial.');
             return;
         }
         if (confirm('¿Seguro que deseas eliminar este documento de la memoria?')) {
@@ -667,13 +658,12 @@
         }
     }
 
-    // GESTIÓN DE CLIENTES
     function guardarClienteActual() {
         const nom = document.getElementById('cliNombre').value.trim();
         const nif = document.getElementById('cliNif').value.trim();
 
         if (!nom) {
-            alert('Introduce al menos el nombre del cliente para guardarlo.');
+            alert('Introduce al menos el nombre del cliente.');
             return;
         }
 
@@ -694,7 +684,7 @@
 
         guardarDatosStorage();
         refrescarCombos();
-        alert('Cliente guardado/actualizado en la memoria.');
+        alert('Cliente guardado/actualizado.');
     }
 
     function cargarClienteSeleccionado() {
@@ -716,22 +706,15 @@
         actualizar();
     }
 
-    // GESTIÓN DE LOGOS
     function guardarNuevoLogo(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 const base64 = e.target.result;
-                const nuevoLogo = {
-                    nombre: file.name,
-                    src: base64
-                };
-                db.logos.push(nuevoLogo);
+                db.logos.push({ nombre: file.name, src: base64 });
                 guardarDatosStorage();
                 refrescarCombos();
-                
-                // Seleccionar el logo subido
                 document.getElementById('selectLogo').value = db.logos.length - 1;
                 seleccionarLogoGuardado();
             };
@@ -755,7 +738,6 @@
         }
     }
 
-    // BACKUP Y RESTAURACIÓN
     function descargarCopiaSeguridad() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const dlAnchor = document.createElement('a');
@@ -777,9 +759,9 @@
                     guardarDatosStorage();
                     refrescarCombos();
                     actualizar();
-                    alert('Copia de seguridad restaurada correctamente.');
+                    alert('Backup restaurado correctamente.');
                 } catch (err) {
-                    alert('El archivo cargado no es un JSON de backup válido.');
+                    alert('El archivo no es un JSON válido.');
                 }
             };
             reader.readAsText(file);
@@ -787,7 +769,7 @@
     }
 
     function resetearContadoresYBorrarTodo() {
-        if (confirm('⚠️ ¿Estás seguro de resetear todo el sistema? Se descargará un backup automático antes de borrar.')) {
+        if (confirm('⚠️ ¿Seguro que deseas resetear? Se descargará un backup por seguridad.')) {
             descargarCopiaSeguridad();
             localStorage.removeItem('reformas_carrascosa_db');
             db = { historial: [], clientes: [], logos: [], contadores: { PRESUPUESTO: 1, FACTURA: 1 } };
@@ -799,11 +781,10 @@
         }
     }
 
-    // EXPORTACIÓN PDF Y JPG
     function descargarPDF() {
         guardarEnHistorial(false);
         const elemento = document.getElementById('hojaA4');
-        const num = document.getElementById('lblTituloDoc').textContent.replace(/[^a-zA-Z0-0-]/g, '_');
+        const num = document.getElementById('lblTituloDoc').textContent.replace(/[^a-zA-Z0-9-]/g, '_');
         
         const opt = {
             margin: 0,
@@ -819,7 +800,7 @@
     function descargarJPG() {
         guardarEnHistorial(false);
         const elemento = document.getElementById('hojaA4');
-        const num = document.getElementById('lblTituloDoc').textContent.replace(/[^a-zA-Z0-0-]/g, '_');
+        const num = document.getElementById('lblTituloDoc').textContent.replace(/[^a-zA-Z0-9-]/g, '_');
 
         html2canvas(elemento, { scale: 2, useCORS: true }).then(canvas => {
             const link = document.createElement('a');
